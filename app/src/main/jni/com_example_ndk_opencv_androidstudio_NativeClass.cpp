@@ -15,7 +15,5 @@ JNIEXPORT jstring JNICALL Java_com_example_ndk_1opencv_1androidstudio_NativeClas
     char buf[128];
     snprintf(buf, sizeof(buf), "%d", frame.cols);
 
-
-
     return env->NewStringUTF(buf);
 }

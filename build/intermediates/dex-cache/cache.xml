@@ -2,39 +2,39 @@
 <items version="2" >
 
     <item
-        jar="/Users/jurgenhahn/AndroidStudioProjects/AHCI-MemeRecommender/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/jars/classes.jar"
+        jar="/Users/jurgenhahn/Projekte/AHCI-MemeRecommender/app/build/intermediates/exploded-aar/AHCI-MemeRecommender/opencv-java/unspecified/jars/classes.jar"
         jumboMode="false"
         revision="21.1.2"
-        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
-        <dex dex="/Users/jurgenhahn/AndroidStudioProjects/AHCI-MemeRecommender/app/build/intermediates/pre-dexed/debug/classes-b9ca1fbe190f8721dbf1206ef3d839ee158f34af.jar" />
+        sha1="e4a3e1bd23d1db795398ba486c40cc89d1416d2b">
+        <dex dex="/Users/jurgenhahn/Projekte/AHCI-MemeRecommender/app/build/intermediates/pre-dexed/debug/classes-78a575a527508e02333028e05ebe13ba1dfafdfd.jar" />
     </item>
     <item
-        jar="/Users/jurgenhahn/AndroidStudioProjects/AHCI-MemeRecommender/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/jars/libs/internal_impl-21.0.3.jar"
+        jar="/Users/jurgenhahn/Projekte/AHCI-MemeRecommender/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/jars/libs/internal_impl-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
-        <dex dex="/Users/jurgenhahn/AndroidStudioProjects/AHCI-MemeRecommender/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-3e84c2487cd188f22ee029f48dc2759bf8a847c9.jar" />
+        <dex dex="/Users/jurgenhahn/Projekte/AHCI-MemeRecommender/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-6d49a52c8aefa46cdb3e617007f0bac450abf163.jar" />
     </item>
     <item
-        jar="/Users/jurgenhahn/AndroidStudioProjects/AHCI-MemeRecommender/app/build/intermediates/exploded-aar/AHCI-MemeRecommender/opencv-java/unspecified/jars/classes.jar"
+        jar="/Users/jurgenhahn/Projekte/AHCI-MemeRecommender/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/jars/classes.jar"
         jumboMode="false"
         revision="21.1.2"
-        sha1="46c447d9ee56e62f932be07670ff64f50f0cb3aa">
-        <dex dex="/Users/jurgenhahn/AndroidStudioProjects/AHCI-MemeRecommender/app/build/intermediates/pre-dexed/debug/classes-2821ee9d99df35232e3935a9e90a3e674ac28cd5.jar" />
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="/Users/jurgenhahn/Projekte/AHCI-MemeRecommender/app/build/intermediates/pre-dexed/debug/classes-7910f9df6aab2a32f62ed6f8e996aedcf07aef06.jar" />
+    </item>
+    <item
+        jar="/Users/jurgenhahn/Projekte/AHCI-MemeRecommender/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/jars/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="/Users/jurgenhahn/Projekte/AHCI-MemeRecommender/app/build/intermediates/pre-dexed/debug/classes-edf6ad94253a1ab8a8c5fcf688efe80a47a283b8.jar" />
     </item>
     <item
         jar="/Applications/eclipse/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
-        <dex dex="/Users/jurgenhahn/AndroidStudioProjects/AHCI-MemeRecommender/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-185137a47428767e7bbe120fbe93bc3ec6c01442.jar" />
-    </item>
-    <item
-        jar="/Users/jurgenhahn/AndroidStudioProjects/AHCI-MemeRecommender/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/jars/classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
-        <dex dex="/Users/jurgenhahn/AndroidStudioProjects/AHCI-MemeRecommender/app/build/intermediates/pre-dexed/debug/classes-8ac8a57000c429ab2d52f3379a653731fe41b3ae.jar" />
+        <dex dex="/Users/jurgenhahn/Projekte/AHCI-MemeRecommender/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-185137a47428767e7bbe120fbe93bc3ec6c01442.jar" />
     </item>
 
 </items>
