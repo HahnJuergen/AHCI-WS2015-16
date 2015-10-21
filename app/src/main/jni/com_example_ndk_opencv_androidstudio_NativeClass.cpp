@@ -17,3 +17,11 @@ JNIEXPORT jstring JNICALL Java_com_example_ndk_1opencv_1androidstudio_NativeClas
 
     return env->NewStringUTF(buf);
 }
+
+JNIEXPORT jint JNICALL Java_com_example_ndk_1opencv_1androidstudio_NativeClass_processMat(JNIEnv * env, jobject obj, jlong adress)
+{
+    cv::Mat & frame = * (cv::Mat *) adress;
+
+    if(frame.cols > 0) return 1;
+    return 0;
+}

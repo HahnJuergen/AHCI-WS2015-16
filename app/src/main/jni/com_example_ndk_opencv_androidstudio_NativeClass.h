@@ -15,6 +15,9 @@ extern "C" {
 JNIEXPORT jstring JNICALL Java_com_example_ndk_1opencv_1androidstudio_NativeClass_getStringFromNative
   (JNIEnv *, jobject);
 
+JNIEXPORT jint JNICALL Java_com_example_ndk_1opencv_1androidstudio_NativeClass_processMat
+        (JNIEnv *, jobject, jlong);
+
 #ifdef __cplusplus
 }
 #endif

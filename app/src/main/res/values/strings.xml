@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">NDK_OpenCV_AndroidStudio</string>
+    <string name="app_name">MemeRecommender</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 </resources>
