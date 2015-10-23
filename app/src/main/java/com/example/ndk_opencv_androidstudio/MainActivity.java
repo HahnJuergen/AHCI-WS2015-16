@@ -2,8 +2,10 @@ package com.example.ndk_opencv_androidstudio;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SurfaceView;
 import android.widget.TextView;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -14,6 +16,7 @@ import org.opencv.core.Mat;
 
 public class MainActivity extends ActionBarActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
+    private CameraBridgeViewBase openCVCameraView;
 
     static {
         System.loadLibrary("MyLib");
@@ -26,7 +29,8 @@ public class MainActivity extends ActionBarActivity implements CameraBridgeViewB
         public void onManagerConnected(int status) {
             switch(status) {
                 case LoaderCallbackInterface.SUCCESS :
-                    //enable view???
+                    Log.i("ammi_test", "LoaderCallbackInterface.SUCCESS");
+                    openCVCameraView.enableView();
                     break;
 
                 default : super.onManagerConnected(status); break;
@@ -41,6 +45,10 @@ public class MainActivity extends ActionBarActivity implements CameraBridgeViewB
 
         TextView tv = (TextView) findViewById(R.id.testTextView);
         tv.setText(NativeClass.getStringFromNative());
+
+        openCVCameraView = (CameraBridgeViewBase) this.findViewById(R.id.testCameraView);
+        openCVCameraView.setVisibility(SurfaceView.VISIBLE);
+        openCVCameraView.setCvCameraViewListener(this);
     }
 
     @Override
@@ -74,12 +82,12 @@ public class MainActivity extends ActionBarActivity implements CameraBridgeViewB
 
     @Override
     public void onCameraViewStarted(int width, int height) {
-
+        Log.i("ammi_test", "onCameraViewStarted\t" + width + "\t" + height);
     }
 
     @Override
     public void onCameraViewStopped() {
-
+        Log.i("ammi_test", "onCameraViewStopped");
     }
 
     @Override
@@ -87,9 +95,9 @@ public class MainActivity extends ActionBarActivity implements CameraBridgeViewB
         Mat frame = inputFrame.rgba();
 
         if(NativeClass.processMat(frame.getNativeObjAddr()) > 0)
-            System.out.println("Mat processed");
+            Log.i("ammi_test", "Mat processed");
         else
-            System.out.println("Mat not processed");
+            Log.i("ammi_test", "Mat not processed");
 
         return frame;
     }
