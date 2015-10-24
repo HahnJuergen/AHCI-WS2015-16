@@ -4,9 +4,11 @@
 
 #ifndef _Included_com_example_ndk_opencv_androidstudio_NativeClass
 #define _Included_com_example_ndk_opencv_androidstudio_NativeClass
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /*
  * Class:     com_example_ndk_opencv_androidstudio_NativeClass
  * Method:    getStringFromNative
