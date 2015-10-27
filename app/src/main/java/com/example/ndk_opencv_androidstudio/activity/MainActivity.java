@@ -24,7 +24,14 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.face.FaceDetector;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "FaceTracker";
@@ -61,6 +68,30 @@ public class MainActivity extends AppCompatActivity {
         } else {
             requestCameraPermission();
         }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("http://192.168.1.53:8080/?num=5");
+
+                    URLConnection connection = url.openConnection();
+                    connection.setDoOutput(true);
+                    connection.connect();
+
+                    InputStream is = connection.getInputStream();
+
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+                    String line;
+
+                    while ((line = br.readLine()) != null)
+                        Log.d("TEST", line);
+
+                } catch (Exception e) { e.printStackTrace(); }
+
+            }
+        }).start();
     }
 
     /**
