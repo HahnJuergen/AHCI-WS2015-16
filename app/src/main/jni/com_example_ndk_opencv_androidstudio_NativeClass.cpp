@@ -18,11 +18,7 @@ std::string const static FACE_CASCADE_NAME = "haarcascade_frontalface_alt.xml";
 std::string const static EYES_CASCADE_NAME = "haarcascade_eye.xml";
 std::string const static SMILE_CASCADE_NAME = "haarcascade_smile.xml";
 
-
-
 bool setup = false;
-
-
 
 JNIEXPORT jint JNICALL Java_com_example_ndk_1opencv_1androidstudio_NativeClass_processMat(JNIEnv * env, jobject obj, jlong adress)
 {

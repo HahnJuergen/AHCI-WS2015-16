@@ -1,4 +1,4 @@
-package com.example.ndk_opencv_androidstudio;
+package com.example.ndk_opencv_androidstudio.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -7,36 +7,22 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SurfaceView;
 import android.view.View;
-import android.widget.TextView;
 
-import com.example.ndk_opencv_androidstudio.camera.CameraSourcePreview;
-import com.example.ndk_opencv_androidstudio.camera.GraphicOverlay;
+import com.example.ndk_opencv_androidstudio.R;
+import com.example.ndk_opencv_androidstudio.camera_preview.CameraSourcePreview;
+import com.example.ndk_opencv_androidstudio.face_detection.FaceTrackerFactory;
+import com.example.ndk_opencv_androidstudio.face_detection.Overlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
-import com.google.android.gms.vision.Tracker;
-import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
-
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.CameraBridgeViewBase;
-import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
-import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Mat;
-import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.IOException;
 
@@ -46,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private CameraSource mCameraSource = null;
 
     private CameraSourcePreview mPreview;
-    private GraphicOverlay mGraphicOverlay;
+    private Overlay mOverlay;
 
     private static final int RC_HANDLE_GMS = 9001;
     // permission request codes need to be < 256
@@ -65,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
-        mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
+        mOverlay = (Overlay) findViewById(R.id.faceOverlay);
 
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
@@ -103,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        Snackbar.make(mGraphicOverlay, R.string.permission_camera_rationale,
+        Snackbar.make(mOverlay, R.string.permission_camera_rationale,
                 Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.ok, listener)
                 .show();
@@ -122,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         detector.setProcessor(
-                new MultiProcessor.Builder<>(new GraphicFaceTrackerFactory())
+                new MultiProcessor.Builder<>(new FaceTrackerFactory(mOverlay))
                         .build());
 
         if (!detector.isOperational()) {
@@ -244,77 +230,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (mCameraSource != null) {
             try {
-                mPreview.start(mCameraSource, mGraphicOverlay);
+                mPreview.start(mCameraSource, mOverlay);
             } catch (IOException e) {
                 Log.e(TAG, "Unable to start camera source.", e);
                 mCameraSource.release();
                 mCameraSource = null;
             }
-        }
-    }
-
-    //==============================================================================================
-    // Graphic Face Tracker
-    //==============================================================================================
-
-    /**
-     * Factory for creating a face tracker to be associated with a new face.  The multiprocessor
-     * uses this factory to create face trackers as needed -- one for each individual.
-     */
-    private class GraphicFaceTrackerFactory implements MultiProcessor.Factory<Face> {
-        @Override
-        public Tracker<Face> create(Face face) {
-            return new GraphicFaceTracker(mGraphicOverlay);
-        }
-    }
-
-    /**
-     * Face tracker for each detected individual. This maintains a face graphic within the app's
-     * associated face overlay.
-     */
-    private class GraphicFaceTracker extends Tracker<Face> {
-        private GraphicOverlay mOverlay;
-        private FaceGraphic mFaceGraphic;
-
-        GraphicFaceTracker(GraphicOverlay overlay) {
-            mOverlay = overlay;
-            mFaceGraphic = new FaceGraphic(overlay);
-        }
-
-        /**
-         * Start tracking the detected face instance within the face overlay.
-         */
-        @Override
-        public void onNewItem(int faceId, Face item) {
-            mFaceGraphic.setId(faceId);
-        }
-
-        /**
-         * Update the position/characteristics of the face within the overlay.
-         */
-        @Override
-        public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
-            mOverlay.add(mFaceGraphic);
-            mFaceGraphic.updateFace(face);
-        }
-
-        /**
-         * Hide the graphic when the corresponding face was not detected.  This can happen for
-         * intermediate frames temporarily (e.g., if the face was momentarily blocked from
-         * view).
-         */
-        @Override
-        public void onMissing(FaceDetector.Detections<Face> detectionResults) {
-            mOverlay.remove(mFaceGraphic);
-        }
-
-        /**
-         * Called when the face is assumed to be gone for good. Remove the graphic annotation from
-         * the overlay.
-         */
-        @Override
-        public void onDone() {
-            mOverlay.remove(mFaceGraphic);
         }
     }
 }

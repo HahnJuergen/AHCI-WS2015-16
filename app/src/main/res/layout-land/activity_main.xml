@@ -8,16 +8,16 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true">
 
-  <com.example.ndk_opencv_androidstudio.camera.CameraSourcePreview
+  <com.example.ndk_opencv_androidstudio.camera_preview.CameraSourcePreview
       android:id="@+id/preview"
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
-    <com.example.ndk_opencv_androidstudio.camera.GraphicOverlay
+    <com.example.ndk_opencv_androidstudio.face_detection.Overlay
         android:id="@+id/faceOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-  </com.example.ndk_opencv_androidstudio.camera.CameraSourcePreview>
+  </com.example.ndk_opencv_androidstudio.camera_preview.CameraSourcePreview>
 
 </LinearLayout>

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.ndk_opencv_androidstudio.camera;
+package com.example.ndk_opencv_androidstudio.camera_preview;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -23,6 +23,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
+import com.example.ndk_opencv_androidstudio.face_detection.Overlay;
 import com.google.android.gms.common.images.Size;
 import com.google.android.gms.vision.CameraSource;
 
@@ -37,7 +38,7 @@ public class CameraSourcePreview extends ViewGroup {
     private boolean mSurfaceAvailable;
     private CameraSource mCameraSource;
 
-    private GraphicOverlay mOverlay;
+    private Overlay mOverlay;
 
     public CameraSourcePreview(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -63,7 +64,7 @@ public class CameraSourcePreview extends ViewGroup {
         }
     }
 
-    public void start(CameraSource cameraSource, GraphicOverlay overlay) throws IOException {
+    public void start(CameraSource cameraSource, Overlay overlay) throws IOException {
         mOverlay = overlay;
         start(cameraSource);
     }

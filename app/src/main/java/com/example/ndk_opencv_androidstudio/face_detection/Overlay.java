@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.ndk_opencv_androidstudio.camera;
+package com.example.ndk_opencv_androidstudio.face_detection;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -43,7 +43,7 @@ import java.util.Set;
  * from the preview's coordinate system to the view coordinate system.</li>
  * </ol>
  */
-public class GraphicOverlay extends View {
+public class Overlay extends View {
     private final Object mLock = new Object();
     private int mPreviewWidth;
     private float mWidthScaleFactor = 1.0f;
@@ -55,12 +55,12 @@ public class GraphicOverlay extends View {
     /**
      * Base class for a custom graphics object to be rendered within the graphic overlay.  Subclass
      * this and implement the {@link Graphic#draw(Canvas)} method to define the
-     * graphics element.  Add instances to the overlay using {@link GraphicOverlay#add(Graphic)}.
+     * graphics element.  Add instances to the overlay using {@link Overlay#add(Graphic)}.
      */
     public static abstract class Graphic {
-        private GraphicOverlay mOverlay;
+        private Overlay mOverlay;
 
-        public Graphic(GraphicOverlay overlay) {
+        public Graphic(Overlay overlay) {
             mOverlay = overlay;
         }
 
@@ -118,7 +118,7 @@ public class GraphicOverlay extends View {
         }
     }
 
-    public GraphicOverlay(Context context, AttributeSet attrs) {
+    public Overlay(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
