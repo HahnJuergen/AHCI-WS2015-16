@@ -25,11 +25,13 @@ import com.google.android.gms.vision.face.Landmark;
  * graphic overlay view.
  */
 public class FaceDataRetriever extends Overlay.ViewTransformation {
-    PointF posLeftEye = null, posRightEye = null, posLeftMouth = null,
+    private PointF posLeftEye = null, posRightEye = null, posLeftMouth = null,
         posRightMouth = null, posNoseBase = null, posBottomMouth = null,
         posLeftCheek = null, posRightCheek = null;
 
-    PointF[] landmarkPositions = null;
+    private PointF[] landmarkPositions = null;
+
+    private float smilingProbability = -1.0f;
 
     public FaceDataRetriever(Overlay overlay) {
         super(overlay);
@@ -37,6 +39,8 @@ public class FaceDataRetriever extends Overlay.ViewTransformation {
 
     public void updateFace(Face face) {
         postInvalidate();
+
+        smilingProbability = face.getIsSmilingProbability();
 
         for(Landmark lm : face.getLandmarks()) {
             if(lm.getType() == Landmark.LEFT_EYE) posLeftEye = new PointF(translateX(lm.getPosition().x), translateY(lm.getPosition().y));
@@ -59,6 +63,10 @@ public class FaceDataRetriever extends Overlay.ViewTransformation {
                 posRightMouth,
                 posBottomMouth
         };
+    }
+
+    public float getSmilingProbability() {
+        return smilingProbability;
     }
 
     public PointF getPosLeftEye() {
