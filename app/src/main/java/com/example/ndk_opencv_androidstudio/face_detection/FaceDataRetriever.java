@@ -15,11 +15,7 @@
  */
 package com.example.ndk_opencv_androidstudio.face_detection;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.PointF;
-import android.util.Log;
 
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.Landmark;
@@ -28,68 +24,18 @@ import com.google.android.gms.vision.face.Landmark;
  * Graphic instance for rendering face position, orientation, and landmarks within an associated
  * graphic overlay view.
  */
-public class FaceDataRetriever extends Overlay.Graphic {
-    private volatile Face mFace;
-/*
-    private static final float FACE_POSITION_RADIUS = 10.0f;
-    private static final float ID_TEXT_SIZE = 40.0f;
-    private static final float ID_Y_OFFSET = 50.0f;
-    private static final float ID_X_OFFSET = -50.0f;
-    private static final float BOX_STROKE_WIDTH = 5.0f;
-
-    private static final int COLOR_CHOICES[] = {
-        Color.BLUE,
-        Color.CYAN,
-        Color.GREEN,
-        Color.MAGENTA,
-        Color.RED,
-        Color.WHITE,
-        Color.YELLOW
-    };
-    private static int mCurrentColorIndex = 0;
-
-    private Paint mFacePositionPaint;
-    private Paint mIdPaint;
-    private Paint mBoxPaint;
-
-
-    private int mFaceId;
-    private float mFaceHappiness;
-*/
-    public FaceDataRetriever(Overlay overlay) {
-        super(overlay);
-/*
-        mCurrentColorIndex = (mCurrentColorIndex + 1) % COLOR_CHOICES.length;
-        final int selectedColor = COLOR_CHOICES[mCurrentColorIndex];
-
-        mFacePositionPaint = new Paint();
-        mFacePositionPaint.setColor(selectedColor);
-
-        mIdPaint = new Paint();
-        mIdPaint.setColor(selectedColor);
-        mIdPaint.setTextSize(ID_TEXT_SIZE);
-
-        mBoxPaint = new Paint();
-        mBoxPaint.setColor(selectedColor);
-        mBoxPaint.setStyle(Paint.Style.STROKE);
-        mBoxPaint.setStrokeWidth(BOX_STROKE_WIDTH);
-*/
-    }
-/*
-    public void setId(int id) {
-        mFaceId = id;
-    }
-*/
+public class FaceDataRetriever extends Overlay.ViewTransformation {
     PointF posLeftEye = null, posRightEye = null, posLeftMouth = null,
         posRightMouth = null, posNoseBase = null, posBottomMouth = null,
         posLeftCheek = null, posRightCheek = null;
 
-    /**
-     * Updates the face instance from the detection of the most recent frame.  Invalidates the
-     * relevant portions of the overlay to trigger a redraw.
-     */
+    PointF[] landmarkPositions = null;
+
+    public FaceDataRetriever(Overlay overlay) {
+        super(overlay);
+    }
+
     public void updateFace(Face face) {
-        mFace = face;
         postInvalidate();
 
         for(Landmark lm : face.getLandmarks()) {
@@ -102,6 +48,17 @@ public class FaceDataRetriever extends Overlay.Graphic {
             if(lm.getType() == Landmark.LEFT_CHEEK) posLeftCheek = new PointF(translateX(lm.getPosition().x), translateY(lm.getPosition().y));
             if(lm.getType() == Landmark.RIGHT_CHEEK) posRightCheek = new PointF(translateX(lm.getPosition().x), translateY(lm.getPosition().y));
         }
+
+        landmarkPositions = new PointF[] {
+                posLeftEye,
+                posRightEye,
+                posLeftCheek,
+                posRightCheek,
+                posNoseBase,
+                posLeftMouth,
+                posRightMouth,
+                posBottomMouth
+        };
     }
 
     public PointF getPosLeftEye() {
@@ -120,56 +77,23 @@ public class FaceDataRetriever extends Overlay.Graphic {
         return posRightMouth;
     }
 
-    /**
-     * Draws the face annotations for position on the supplied canvas.
-     */
-    @Override
-    public void draw(Canvas canvas) {
-/*
-        Face face = mFace;
-        if (face == null) {
-            return;
-        }
+    public PointF getPosNoseBase() {
+        return posNoseBase;
+    }
 
-        // Draws a circle at the position of the detected face, with the face's track id below.
-        float x = translateX(face.getPosition().x + face.getWidth() / 2);
-        float y = translateY(face.getPosition().y + face.getHeight() / 2);
+    public PointF getPosBottomMouth() {
+        return posBottomMouth;
+    }
 
-        for(Landmark lm : face.getLandmarks()) {
-            float x1 = translateX(lm.getPosition().x);
-            float y1 = translateY(lm.getPosition().y);
+    public PointF getPosLeftCheek() {
+        return posLeftCheek;
+    }
 
-            canvas.drawCircle(x1, y1, FACE_POSITION_RADIUS, mFacePositionPaint);
-        }
+    public PointF getPosRightCheek() {
+        return posRightCheek;
+    }
 
-        PointF leftEye = null, rightEye = null;
-
-        for(Landmark lm : face.getLandmarks()) {
-            if(lm.getType() == Landmark.LEFT_EYE) leftEye = new PointF(translateX(lm.getPosition().x), translateY(lm.getPosition().y));
-            if(lm.getType() == Landmark.RIGHT_EYE) rightEye = new PointF(translateX(lm.getPosition().x), translateY(lm.getPosition().y));
-        }
-
-        if(leftEye != null & rightEye != null) {
-            canvas.drawCircle(leftEye.x, leftEye.y, FACE_POSITION_RADIUS, mFacePositionPaint);
-            canvas.drawCircle(rightEye.x, rightEye.y, FACE_POSITION_RADIUS, mFacePositionPaint);
-
-            Log.i("TEST", "With Graphics: Left: " + leftEye.x + " : " + leftEye.y + "; Right: " + rightEye.x + " : " + rightEye.y);
-        }
-
-        canvas.drawCircle(x, y, FACE_POSITION_RADIUS, mFacePositionPaint);
-        canvas.drawText("id: " + mFaceId, x + ID_X_OFFSET, y + ID_Y_OFFSET, mIdPaint);
-        canvas.drawText("happiness: " + String.format("%.2f", face.getIsSmilingProbability()), x - ID_X_OFFSET, y - ID_Y_OFFSET, mIdPaint);
-        canvas.drawText("right eye: " + String.format("%.2f", face.getIsRightEyeOpenProbability()), x + ID_X_OFFSET * 2, y + ID_Y_OFFSET * 2, mIdPaint);
-        canvas.drawText("left eye: " + String.format("%.2f", face.getIsLeftEyeOpenProbability()), x - ID_X_OFFSET * 2, y - ID_Y_OFFSET * 2, mIdPaint);
-
-        // Draws a bounding box around the face.
-        float xOffset = scaleX(face.getWidth() / 2.0f);
-        float yOffset = scaleY(face.getHeight() / 2.0f);
-        float left = x - xOffset;
-        float top = y - yOffset;
-        float right = x + xOffset;
-        float bottom = y + yOffset;
-        canvas.drawRect(left, top, right, bottom, mBoxPaint);
-*/
+    public PointF[] getLandmarkPositions() {
+        return landmarkPositions;
     }
 }

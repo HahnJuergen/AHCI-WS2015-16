@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.ndk_opencv_androidstudio.activity;
 
 import android.Manifest;
@@ -18,6 +34,7 @@ import com.example.ndk_opencv_androidstudio.R;
 import com.example.ndk_opencv_androidstudio.camera_preview.CameraSourcePreview;
 import com.example.ndk_opencv_androidstudio.face_detection.FaceTrackerFactory;
 import com.example.ndk_opencv_androidstudio.face_detection.Overlay;
+import com.example.ndk_opencv_androidstudio.server_connection.ServerCorrespondence;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
@@ -28,10 +45,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "FaceTracker";
@@ -45,13 +62,6 @@ public class MainActivity extends AppCompatActivity {
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
-    //==============================================================================================
-    // Activity Methods
-    //==============================================================================================
-
-    /**
-     * Initializes the UI and initiates the creation of a face detector.
-     */
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -69,36 +79,9 @@ public class MainActivity extends AppCompatActivity {
             requestCameraPermission();
         }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL url = new URL("http://192.168.1.53:8080/?num=5");
-
-                    URLConnection connection = url.openConnection();
-                    connection.setDoOutput(true);
-                    connection.connect();
-
-                    InputStream is = connection.getInputStream();
-
-                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-                    String line;
-
-                    while ((line = br.readLine()) != null)
-                        Log.d("TEST", line);
-
-                } catch (Exception e) { e.printStackTrace(); }
-
-            }
-        }).start();
+        ServerCorrespondence.testCorrespondence("num=2");
     }
 
-    /**
-     * Handles the requesting of the camera permission.  This includes
-     * showing a "Snackbar" message of why the permission is needed then
-     * sending the request.
-     */
     private void requestCameraPermission() {
         Log.w(TAG, "Camera permission is not granted. Requesting permission");
 
@@ -126,11 +109,6 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
-    /**
-     * Creates and starts the camera.  Note that this uses a higher resolution in comparison
-     * to other detection examples to enable the barcode detector to detect small barcodes
-     * at long distances.
-     */
     private void createCameraSource() {
 
         Context context = getApplicationContext();
@@ -161,9 +139,6 @@ public class MainActivity extends AppCompatActivity {
                 .build();
     }
 
-    /**
-     * Restarts the camera.
-     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -171,19 +146,12 @@ public class MainActivity extends AppCompatActivity {
         startCameraSource();
     }
 
-    /**
-     * Stops the camera.
-     */
     @Override
     protected void onPause() {
         super.onPause();
         mPreview.stop();
     }
 
-    /**
-     * Releases the resources associated with the camera source, the associated detector, and the
-     * rest of the processing pipeline.
-     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -192,22 +160,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Callback for the result from requesting permissions. This method
-     * is invoked for every call on {@link #requestPermissions(String[], int)}.
-     * <p>
-     * <strong>Note:</strong> It is possible that the permissions request interaction
-     * with the user is interrupted. In this case you will receive empty permissions
-     * and results arrays which should be treated as a cancellation.
-     * </p>
-     *
-     * @param requestCode  The request code passed in {@link #requestPermissions(String[], int)}.
-     * @param permissions  The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions
-     *                     which is either {@link PackageManager#PERMISSION_GRANTED}
-     *                     or {@link PackageManager#PERMISSION_DENIED}. Never null.
-     * @see #requestPermissions(String[], int)
-     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode != RC_HANDLE_CAMERA_PERM) {
@@ -239,15 +191,6 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
-    //==============================================================================================
-    // Camera Source Preview
-    //==============================================================================================
-
-    /**
-     * Starts or restarts the camera source, if it exists.  If the camera source doesn't exist yet
-     * (e.g., because onResume was called before the camera source was created), this will be called
-     * again when the camera source is created.
-     */
     private void startCameraSource() {
 
         // check that the device has play services available.
