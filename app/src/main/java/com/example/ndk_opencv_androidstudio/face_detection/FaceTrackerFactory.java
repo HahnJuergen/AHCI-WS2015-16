@@ -19,6 +19,8 @@ package com.example.ndk_opencv_androidstudio.face_detection;
  * Created by jurgenhahn on 27/10/15.
  */
 
+import android.webkit.WebView;
+
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;

@@ -87,7 +87,8 @@ public class MainActivity extends AppCompatActivity {
         myWebView.setWebViewClient(new WebViewClient());
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        myWebView.loadUrl("http://9gag.com/gag/aLBV8n6?sc=cute");
+
+        ServerCorrespondence.getMemeImage("/load_images.json", this);
     }
 
     private void requestCameraPermission() {
