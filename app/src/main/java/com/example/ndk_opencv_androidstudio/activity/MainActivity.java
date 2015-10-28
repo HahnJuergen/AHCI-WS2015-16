@@ -28,7 +28,11 @@ import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.example.ndk_opencv_androidstudio.R;
 import com.example.ndk_opencv_androidstudio.camera_preview.CameraSourcePreview;
@@ -79,7 +83,11 @@ public class MainActivity extends AppCompatActivity {
             requestCameraPermission();
         }
 
-        ServerCorrespondence.testCorrespondence("num=2");
+        WebView myWebView = (WebView) findViewById(R.id.webview);
+        myWebView.setWebViewClient(new WebViewClient());
+        myWebView.getSettings().setJavaScriptEnabled(true);
+        myWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        myWebView.loadUrl("http://9gag.com/gag/aLBV8n6?sc=cute");
     }
 
     private void requestCameraPermission() {

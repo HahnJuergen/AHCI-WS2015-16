@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/topLayout"
     android:orientation="vertical"
@@ -17,7 +17,51 @@
             android:id="@+id/faceOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
     </com.example.ndk_opencv_androidstudio.camera_preview.CameraSourcePreview>
 
-</LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
+
+        <WebView
+            android:id="@+id/webview"
+            android:layout_width="match_parent"
+            android:layout_height="435dp">
+
+        </WebView>
+
+        <ImageView
+            android:id="@+id/emoticon"
+            android:layout_below="@id/webview"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:src="@android:drawable/btn_plus"/>
+
+        <TextView
+            android:id="@+id/pictureTitle"
+            android:layout_toRightOf="@id/emoticon"
+            android:layout_below="@id/webview"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="pictureTitle"
+            android:textSize="25sp"
+            android:gravity="center"
+            android:background="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/recognizedEmotion"
+            android:layout_toRightOf="@id/emoticon"
+            android:layout_below="@id/pictureTitle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="emotion"
+            android:textSize="25sp"
+            android:gravity="center"
+            android:background="@android:color/white"/>
+    </RelativeLayout>
+</RelativeLayout>

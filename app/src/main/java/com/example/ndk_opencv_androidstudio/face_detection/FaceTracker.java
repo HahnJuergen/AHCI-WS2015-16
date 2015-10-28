@@ -16,6 +16,7 @@
 package com.example.ndk_opencv_androidstudio.face_detection;
 
 import android.graphics.PointF;
+import android.text.LoginFilter;
 import android.util.Log;
 
 import com.google.android.gms.vision.Tracker;
@@ -38,7 +39,7 @@ public class FaceTracker extends Tracker<Face> {
     public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
         mFaceDataRetriever.updateFace(face);
 
-        PointF[] landmarkPos = mFaceDataRetriever.getLandmarkPositions();
+        Log.i("TEST", "" + mFaceDataRetriever.getPosLeftEye().x + " : " + mFaceDataRetriever.getPosRightEye().y);
     }
 
     /**
