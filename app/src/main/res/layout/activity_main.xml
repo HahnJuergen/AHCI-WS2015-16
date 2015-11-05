@@ -53,6 +53,14 @@
             android:gravity="center"
             android:background="@android:color/white"/>
 
+        <Button
+            android:id="@+id/buttonNext"
+            android:layout_width="75dp"
+            android:layout_height="55dp"
+            android:text="Next"
+            android:layout_alignParentRight="true"
+            android:layout_above="@id/pictureTitle"/>
+
         <TextView
             android:id="@+id/recognizedEmotion"
             android:layout_toRightOf="@id/emoticon"
