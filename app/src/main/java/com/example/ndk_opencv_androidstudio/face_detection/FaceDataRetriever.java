@@ -17,6 +17,7 @@ package com.example.ndk_opencv_androidstudio.face_detection;
 
 import android.graphics.PointF;
 
+import com.example.ndk_opencv_androidstudio.auxiliary.AnalyticGeometry;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.Landmark;
 
@@ -31,7 +32,7 @@ public class FaceDataRetriever extends Overlay.ViewTransformation {
 
     private PointF[] landmarkPositions = null;
 
-    private float smilingProbability = -1.0f;
+    private float smilingProbability = Face.UNCOMPUTED_PROBABILITY;
 
     public FaceDataRetriever(Overlay overlay) {
         super(overlay);
@@ -41,6 +42,18 @@ public class FaceDataRetriever extends Overlay.ViewTransformation {
         postInvalidate();
 
         smilingProbability = face.getIsSmilingProbability();
+
+        float faceEulerY = face.getEulerY();
+        float faceEulerZ = face.getEulerZ();
+        float faceHeight = face.getHeight();
+        float faceWidth = face.getWidth();
+
+        PointF facePosition = face.getPosition();
+
+        int faceId = face.getId();
+
+        float isLeftEyeOpenProbability = face.getIsLeftEyeOpenProbability();
+        float isRightEyeOpenProbability = face.getIsRightEyeOpenProbability();
 
         for(Landmark lm : face.getLandmarks()) {
             if(lm.getType() == Landmark.LEFT_EYE) posLeftEye = new PointF(translateX(lm.getPosition().x), translateY(lm.getPosition().y));
@@ -65,43 +78,70 @@ public class FaceDataRetriever extends Overlay.ViewTransformation {
         };
     }
 
-    public float getSmilingProbability() {
+    public final double getDistanceBetweenEyes() {
+        return (
+                (posLeftEye != null && posRightEye != null) ?
+                        AnalyticGeometry.getGeometricVectorNorm(AnalyticGeometry.getGeometricVector(posLeftEye, posRightEye))
+                        :
+                        (double) Face.UNCOMPUTED_PROBABILITY
+        );
+    }
+
+    public final double getDistanceBetweenMouthPoints() {
+        return (
+                (posLeftMouth != null && posRightMouth != null) ?
+                        AnalyticGeometry.getGeometricVectorNorm(AnalyticGeometry.getGeometricVector(posLeftMouth, posRightMouth))
+                        :
+                        (double) Face.UNCOMPUTED_PROBABILITY
+        );
+    }
+
+    public final double getDistanceBetweenCheekPoints() {
+        return (
+                (posLeftCheek != null && posRightCheek != null) ?
+                        AnalyticGeometry.getGeometricVectorNorm(AnalyticGeometry.getGeometricVector(posLeftCheek, posRightCheek))
+                        :
+                        (double) Face.UNCOMPUTED_PROBABILITY
+        );
+    }
+
+    public final float getSmilingProbability() {
         return smilingProbability;
     }
 
-    public PointF getPosLeftEye() {
+    public final PointF getPosLeftEye() {
         return posLeftEye;
     }
 
-    public PointF getPosRightEye() {
+    public final PointF getPosRightEye() {
         return posRightEye;
     }
 
-    public PointF getPosLeftMouth() {
+    public final PointF getPosLeftMouth() {
         return posLeftMouth;
     }
 
-    public PointF getPosRightMouth() {
+    public final PointF getPosRightMouth() {
         return posRightMouth;
     }
 
-    public PointF getPosNoseBase() {
+    public final PointF getPosNoseBase() {
         return posNoseBase;
     }
 
-    public PointF getPosBottomMouth() {
+    public final PointF getPosBottomMouth() {
         return posBottomMouth;
     }
 
-    public PointF getPosLeftCheek() {
+    public final PointF getPosLeftCheek() {
         return posLeftCheek;
     }
 
-    public PointF getPosRightCheek() {
+    public final PointF getPosRightCheek() {
         return posRightCheek;
     }
 
-    public PointF[] getLandmarkPositions() {
+    public final PointF[] getLandmarkPositions() {
         return landmarkPositions;
     }
 }
