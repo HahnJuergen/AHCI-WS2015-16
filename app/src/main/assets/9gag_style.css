@@ -1,0 +1,7 @@
+.container.offset {
+    top: 45px !important;
+}
+
+.overlay-wrapper {
+    display: none;
+}

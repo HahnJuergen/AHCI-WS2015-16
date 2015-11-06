@@ -27,12 +27,12 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"/>
 
-        <WebView
+        <de.ahci.memewebview.MemeWebView
             android:id="@+id/webview"
             android:layout_width="match_parent"
             android:layout_height="435dp">
 
-        </WebView>
+        </de.ahci.memewebview.MemeWebView>
 
         <ImageView
             android:id="@+id/emoticon"
