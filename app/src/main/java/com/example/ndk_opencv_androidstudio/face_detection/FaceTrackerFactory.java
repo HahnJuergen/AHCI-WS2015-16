@@ -19,6 +19,7 @@ package com.example.ndk_opencv_androidstudio.face_detection;
  * Created by jurgenhahn on 27/10/15.
  */
 
+import android.content.Context;
 import android.webkit.WebView;
 
 import com.google.android.gms.vision.MultiProcessor;
@@ -32,13 +33,15 @@ import com.google.android.gms.vision.face.Face;
 public class FaceTrackerFactory implements MultiProcessor.Factory<Face> {
 
     private Overlay overlay;
+    private Context context;
 
-    public FaceTrackerFactory(Overlay overlay) {
+    public FaceTrackerFactory(Overlay overlay, Context context) {
         this.overlay = overlay;
+        this.context = context;
     }
 
     @Override
     public Tracker<Face> create(Face face) {
-        return new FaceTracker(overlay);
+        return new FaceTracker(overlay, context);
     }
 }

@@ -105,7 +105,7 @@ public class FaceDataRetriever extends Overlay.ViewTransformation {
         );
     }
 
-    public final float getSmilingProbability() {
+    public final double getSmilingProbability() {
         return smilingProbability;
     }
 
