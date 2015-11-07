@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,16 +34,27 @@ public class MemeWebView extends WebView {
 
     public MemeWebView(Context context) {
         super(context);
-        setupHandler();
+        setupMemeWebView();
     }
 
     public MemeWebView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setupHandler();
+        setupMemeWebView();
     }
 
     public MemeWebView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setupMemeWebView();
+    }
+
+    private void setupMemeWebView() {
+        this.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+                return true;
+            }
+        });
+        this.setWebChromeClient(new WebChromeClientWithAlert(getContext()));
         setupHandler();
     }
 
@@ -96,6 +108,19 @@ public class MemeWebView extends WebView {
         }
         style.append("</style>");
         doc.head().append(style.toString());
+
+        Elements body = doc.getElementsByTag("body");
+        if(body.size() > 0) {
+            StringBuilder script = new StringBuilder();
+            script.append("<script>");
+            try {
+                script.append(loadAsset("9gag_script.js"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            script.append("</script>");
+            body.get(0).append(script.toString());
+        }
     }
 
     /**
@@ -107,6 +132,7 @@ public class MemeWebView extends WebView {
     public void loadUrl(String url) {
         Log.v("ahci_meme_view", "loading url: " + url);
         if (url.startsWith("http://9gag.com/")) {
+
             load9GagMeme(url);
         } else {
             super.loadUrl(url);
