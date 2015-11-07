@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.example.ndk_opencv_androidstudio.R;
 import com.example.ndk_opencv_androidstudio.json_parser.JSONParser;
@@ -24,13 +25,23 @@ import java.net.URLConnection;
  */
 public class ServerCorrespondence {
     private static Context context;
+    private static int increment = 0;
 
-    public static boolean recentDownload = false;
+    public static boolean downloading = false;
 
     public static void getMemeImage(final String param, final Context c) {
+        downloading = true;
         context = c;
 
         new DownloadTest().execute(param);
+    }
+
+    public static void getMemeImage(final String param, final Context c, int i) {
+        downloading = true;
+        context = c;
+
+        new DownloadTest().execute(param);
+        increment = i;
     }
 
     public static void updateWebView(final String[] urls) {
@@ -39,7 +50,15 @@ public class ServerCorrespondence {
             @Override
             public void run() {
                 WebView wv = (WebView) ((Activity) context).findViewById(R.id.webview);
-                wv.loadUrl(urls[0]);
+                wv.setWebViewClient(new WebViewClient() {
+
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        downloading = false;
+                    }
+                });
+
+                wv.loadUrl(urls[increment]);
             }
         });
     }
@@ -50,7 +69,7 @@ public class ServerCorrespondence {
         protected String doInBackground(String... params) {
             String s = "";
             try {
-                URL url = new URL("http://192.168.1.53:8080" + params[0]);
+                URL url = new URL("http://192.168.178.31:8080" + params[0]);
 
                 URLConnection connection = url.openConnection();
                 connection.setDoOutput(true);
