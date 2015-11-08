@@ -40,6 +40,7 @@ import com.example.ndk_opencv_androidstudio.face_detection.FaceTrackerFactory;
 import com.example.ndk_opencv_androidstudio.face_detection.Overlay;
 import com.example.ndk_opencv_androidstudio.server_connection.ServerCorrespondence;
 import com.example.ndk_opencv_androidstudio.user_test_001.EmotionSelectionDialog;
+import com.example.ndk_opencv_androidstudio.user_test_001.UserIdInputDialog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
 
     private FaceTracker faceTracker;
     private Button nextButton;
-    private int userId = 9;
+    private int userId = -1;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -97,6 +98,15 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         myWebView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; Android 4.4; Nexus 5 Build/_BuildID_) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36\n");
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+
+        final UserIdInputDialog dialog = new UserIdInputDialog(this);
+        dialog.setup(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface d, int which) {
+                userId = dialog.getUserId();
+            }
+        });
+        dialog.show();
 
         ServerCorrespondence.getMemeImage("/load_images.json", this, this);
     }

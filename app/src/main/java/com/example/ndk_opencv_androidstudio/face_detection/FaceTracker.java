@@ -116,7 +116,6 @@ public class FaceTracker extends Tracker<Face> {
             faceHeightList.add(mFaceDataRetriever.getFaceHeight());
             leftEyeOpenProbabilities.add(mFaceDataRetriever.getLeftEyeOpenProbability());
             rightEyeOpenProbabilities.add(mFaceDataRetriever.getRightEyeOpenProbability());
-            Log.d("ahci_debug", "should add tracking data!!" + "\t" + smilingProbability.size());
 
         }
     }
@@ -132,7 +131,7 @@ public class FaceTracker extends Tracker<Face> {
             if(!dir.exists()) {
                 dir.mkdirs();
                 File file = new File(dir, fName);
-                if (!file.exists()) {
+                if (!Arrays.asList(dir.listFiles()).contains(fName)) {
                     try {
                         FileWriter fw = new FileWriter(file, true);
                         fw.append("user_id\t"
