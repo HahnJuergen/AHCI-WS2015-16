@@ -34,14 +34,22 @@ public class FaceTrackerFactory implements MultiProcessor.Factory<Face> {
 
     private Overlay overlay;
     private Context context;
+    private OnNewTrackerListener listener;
 
-    public FaceTrackerFactory(Overlay overlay, Context context) {
+    public FaceTrackerFactory(Overlay overlay, Context context, OnNewTrackerListener listener) {
         this.overlay = overlay;
         this.context = context;
+        this.listener = listener;
     }
 
     @Override
     public Tracker<Face> create(Face face) {
+        FaceTracker tracker = new FaceTracker(overlay, context);
+        listener.newFacetrackerCreated(tracker);
         return new FaceTracker(overlay, context);
+    }
+
+    public interface OnNewTrackerListener {
+        public void newFacetrackerCreated(FaceTracker faceTracker);
     }
 }

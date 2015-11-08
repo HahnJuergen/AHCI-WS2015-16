@@ -7,4 +7,5 @@
     <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
     <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
     <string name="activity_main_button_next">Nächstes Bild</string>
+    <string name="choose_emotion_dialog_hint">Welches Emoticon beschreibt Ihre Reaktion auf das Bild am besten?</string>
 </resources>

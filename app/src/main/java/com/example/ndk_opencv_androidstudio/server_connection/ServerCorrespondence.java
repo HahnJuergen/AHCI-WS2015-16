@@ -29,13 +29,13 @@ public class ServerCorrespondence {
 
     public static boolean downloading = false;
 
-    public static void getMemeImage(final String param, final Context c) {
+    public static void getMemeImage(final String param, final Context c, OnMemeDownloadFinishedListener listener) {
         downloading = true;
         context = c;
         increment++;
 
 
-        new DownloadTest().execute(param);
+        new DownloadTest(listener).execute(param);
     }
 
     public static void updateWebView(final String[] urls) {
@@ -58,6 +58,12 @@ public class ServerCorrespondence {
     }
 
     private static class DownloadTest extends AsyncTask<String, Void, String> {
+
+        private OnMemeDownloadFinishedListener listener;
+
+        public DownloadTest(OnMemeDownloadFinishedListener listener) {
+            this.listener = listener;
+        }
 
         @Override
         protected String doInBackground(String... params) {
@@ -95,6 +101,7 @@ public class ServerCorrespondence {
                 String[] urls = JSONParser.getImageURLs(JSONParser.getRootObject(s).getJSONArray("images"));
 
                 updateWebView(urls);
+                listener.onMemeDownloadFinished();
 
             } catch(JSONException je) {}
         }
@@ -103,5 +110,9 @@ public class ServerCorrespondence {
         protected void onProgressUpdate(Void... values) {
             super.onProgressUpdate(values);
         }
+    }
+
+    public interface OnMemeDownloadFinishedListener {
+        public void onMemeDownloadFinished();
     }
 }

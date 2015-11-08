@@ -43,47 +43,49 @@ import java.util.Collections;
 import java.util.List;
 
 public class FaceTracker extends Tracker<Face> {
-    private boolean isNextImage = false;
+
+    private static boolean doNotTrack;
+
+    private static int pic_id = 0;
+    private final int USER_ID = 3;
+
     private FaceDataRetriever mFaceDataRetriever;
     private Context context;
     private int increment = 0;
 
+    private static List<PointF> positionsLeftEyes = new ArrayList<>();
+    private static List<PointF> positionsRightEyes = new ArrayList<>();
+    private static List<PointF> positionsLeftMouth = new ArrayList<>();
+    private static List<PointF> positionsRightMouth = new ArrayList<>();
+    private static List<PointF> positionsNoseBase = new ArrayList<>();
+    private static List<PointF> positionsBottomMouth = new ArrayList<>();
+    private static List<PointF> positionsLeftCheek = new ArrayList<>();
+    private static List<PointF> positionsRightCheek = new ArrayList<>();
+    private static List<PointF> positionsFace = new ArrayList<>();
+
+    private static List<Integer> faceIds = new ArrayList<>();
+
+    private static List<Float> smilingProbability = new ArrayList<>();
+    private static List<Float> eulerYFaceList = new ArrayList<>();
+    private static List<Float> eulerZFaceList = new ArrayList<>();
+    private static List<Float> faceWidthList = new ArrayList<>();
+    private static List<Float> faceHeightList = new ArrayList<>();
+    private static List<Float> leftEyeOpenProbabilities = new ArrayList<>();
+    private static List<Float> rightEyeOpenProbabilities = new ArrayList<>();
+
+
+    public static void doNotTrack() {
+        doNotTrack = true;
+    }
+
+    public static void doTrack() {
+        doNotTrack = false;
+    }
+
     public FaceTracker(Overlay overlay, Context context) {
         this.context = context;
         mFaceDataRetriever = new FaceDataRetriever(overlay);
-
-        Button b = (Button) ((Activity) context).findViewById(R.id.buttonNext);
-
-        b.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                ServerCorrespondence.downloading = true;
-                isNextImage = true;
-                ++pic_id;
-            }
-        });
     }
-
-    private List<PointF> positionsLeftEyes = new ArrayList<>();
-    private List<PointF> positionsRightEyes = new ArrayList<>();
-    private List<PointF> positionsLeftMouth = new ArrayList<>();
-    private List<PointF> positionsRightMouth = new ArrayList<>();
-    private List<PointF> positionsNoseBase = new ArrayList<>();
-    private List<PointF> positionsBottomMouth = new ArrayList<>();
-    private List<PointF> positionsLeftCheek = new ArrayList<>();
-    private List<PointF> positionsRightCheek = new ArrayList<>();
-    private List<PointF> positionsFace = new ArrayList<>();
-
-    private List<Integer> faceIds = new ArrayList<>();
-
-    private List<Float> smilingProbability = new ArrayList<>();
-    private List<Float> eulerYFaceList = new ArrayList<>();
-    private List<Float> eulerZFaceList = new ArrayList<>();
-    private List<Float> faceWidthList = new ArrayList<>();
-    private List<Float> faceHeightList = new ArrayList<>();
-    private List<Float> leftEyeOpenProbabilities = new ArrayList<>();
-    private List<Float> rightEyeOpenProbabilities = new ArrayList<>();
 
     /**
      * Update the position/characteristics of the face within the overlay.
@@ -92,7 +94,7 @@ public class FaceTracker extends Tracker<Face> {
      */
     @Override
     public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
-        if(!ServerCorrespondence.downloading) {
+        if(!doNotTrack) {
             mFaceDataRetriever.updateFace(face);
 
             positionsLeftEyes.add(mFaceDataRetriever.getPosLeftEye());
@@ -114,87 +116,62 @@ public class FaceTracker extends Tracker<Face> {
             faceHeightList.add(mFaceDataRetriever.getFaceHeight());
             leftEyeOpenProbabilities.add(mFaceDataRetriever.getLeftEyeOpenProbability());
             rightEyeOpenProbabilities.add(mFaceDataRetriever.getRightEyeOpenProbability());
+            Log.d("ahci_debug", "should add tracking data!!" + "\t" + smilingProbability.size());
 
-        } else if(isNextImage){
-            ((Activity) context).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    new AlertDialog.Builder(context).setTitle("Stimmt das?")
-                            .setMessage("Wir denken du fandest das Bild witzig! (" + getMaximum(smilingProbability) + ")")
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Log.i("TEST", "POSITIVE");
-                                    save();
-                                    reset();
-                                }
-                            })
-                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Log.i("TEST", "NEGATIVE");
-                                    reset();
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
-                }
-            });
-
-            ServerCorrespondence.getMemeImage("/load_images.json", context);
-
-            isNextImage = false;
         }
     }
 
-    private int pic_id = 0;
-    private final int USER_ID = 3;
-
-    private void save() {
+    public void save(int selectedEmotion, int userID) {
         //write everything to file
         //userid \t picid \t smile_probability \t ...
-        
         try {
 
             String root = Environment.getExternalStorageDirectory().toString();
             File dir = new File(root + "/user_test_data");
-            String fName = "data.csv";
+            String fName = "data_" + userID + ".csv";
             if(!dir.exists()) {
                 dir.mkdirs();
                 File file = new File(dir, fName);
-                try {
-                    FileWriter fw = new FileWriter(file, true);
-                    fw.append("user_id\t"
-                            + "pic_id\t"
-                            + "sp\t"
-                            + "xle\t"
-                            + "yle\t"
-                            + "leop\t"
-                            + "xre\t"
-                            + "yre\t"
-                            + "reop\t"
-                            + "xlm\t"
-                            + "ylm\t"
-                            + "xrm\t"
-                            + "yrm\t"
-                            + "xlc\t"
-                            + "ylc\t"
-                            + "xrc\t"
-                            + "yrc\t"
-                            + "xnb\t"
-                            + "ynb\t"
-                            + "xbm\t"
-                            + "ybm\t"
-                            + "x_face\t"
-                            + "y_face\t"
-                            + "face_id\t"
-                            + "euler_y\t"
-                            + "euler_z\t"
-                            + "face_width\t"
-                            + "face_height\n"
-                            );
+                if (!file.exists()) {
+                    try {
+                        FileWriter fw = new FileWriter(file, true);
+                        fw.append("user_id\t"
+                                        + "pic_id\t"
+                                        + "sp\t"
+                                        + "xle\t"
+                                        + "yle\t"
+                                        + "leop\t"
+                                        + "xre\t"
+                                        + "yre\t"
+                                        + "reop\t"
+                                        + "xlm\t"
+                                        + "ylm\t"
+                                        + "xrm\t"
+                                        + "yrm\t"
+                                        + "xlc\t"
+                                        + "ylc\t"
+                                        + "xrc\t"
+                                        + "yrc\t"
+                                        + "xnb\t"
+                                        + "ynb\t"
+                                        + "xbm\t"
+                                        + "ybm\t"
+                                        + "x_face\t"
+                                        + "y_face\t"
+                                        + "face_id\t"
+                                        + "euler_y\t"
+                                        + "euler_z\t"
+                                        + "face_width\t"
+                                        + "face_height\t"
+                                        + "emotion_was\t"
+                                        + "timestamp\n"
+                        );
 
-                    fw.flush();
-                    fw.close();
-                } catch (Exception e) {}
+                        fw.flush();
+                        fw.close();
+                    } catch (Exception e) {
+                    }
+                }
             }
 
             File file = new File(dir, fName);
@@ -203,7 +180,7 @@ public class FaceTracker extends Tracker<Face> {
                 FileWriter fw = new FileWriter(file, true);
 
                 for(int i = 0; i < smilingProbability.size(); i++) {
-                    fw.append("" + USER_ID + "\t" + pic_id + "\t" + smilingProbability.get(i) + "\t");
+                    fw.append("" + userID + "\t" + pic_id + "\t" + smilingProbability.get(i) + "\t");
                     fw.append(getLineOfPointTuples(positionsLeftEyes.get(i)));
                     fw.append("" + leftEyeOpenProbabilities.get(i) + "\t");
                     fw.append(getLineOfPointTuples(positionsRightEyes.get(i)));
@@ -220,7 +197,9 @@ public class FaceTracker extends Tracker<Face> {
                     fw.append("" + eulerYFaceList.get(i) + "\t");
                     fw.append("" + eulerZFaceList.get(i) + "\t");
                     fw.append("" + faceWidthList.get(i) + "\t");
-                    fw.append("" + faceHeightList.get(i) + "\n");
+                    fw.append("" + faceHeightList.get(i) + "\t");
+                    fw.append("" + selectedEmotion + "\t");
+                    fw.append("" + System.currentTimeMillis() + "\n");
                 }
 
                 fw.flush();
@@ -229,13 +208,15 @@ public class FaceTracker extends Tracker<Face> {
 
 
         } catch (Exception e) {}
+
+        pic_id++;
     }
 
     private String getLineOfPointTuples(PointF p) {
         return (p != null) ? ("" + p.x + "\t" + p.y + "\t") : ("NA\t");
     }
 
-    private void reset() {
+    public void reset() {
         positionsLeftEyes.clear();
         positionsRightEyes.clear();
         positionsLeftMouth.clear();

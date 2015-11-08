@@ -23,38 +23,33 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 
 import com.example.ndk_opencv_androidstudio.R;
 import com.example.ndk_opencv_androidstudio.camera_preview.CameraSourcePreview;
+import com.example.ndk_opencv_androidstudio.face_detection.FaceTracker;
 import com.example.ndk_opencv_androidstudio.face_detection.FaceTrackerFactory;
 import com.example.ndk_opencv_androidstudio.face_detection.Overlay;
 import com.example.ndk_opencv_androidstudio.server_connection.ServerCorrespondence;
+import com.example.ndk_opencv_androidstudio.user_test_001.EmotionSelectionDialog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.face.FaceDetector;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FaceTrackerFactory.OnNewTrackerListener,
+    ServerCorrespondence.OnMemeDownloadFinishedListener {
     private static final String TAG = "FaceTracker";
 
     private CameraSource mCameraSource = null;
@@ -66,6 +61,10 @@ public class MainActivity extends AppCompatActivity {
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
 
+    private FaceTracker faceTracker;
+    private Button nextButton;
+    private int userId = 9;
+
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -73,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mOverlay = (Overlay) findViewById(R.id.faceOverlay);
+
+        nextButton = (Button) this.findViewById(R.id.buttonNext);
+        setupNextMemeButton(nextButton);
 
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
@@ -96,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
-        ServerCorrespondence.getMemeImage("/load_images.json", this);
+        ServerCorrespondence.getMemeImage("/load_images.json", this, this);
     }
 
     private void requestCameraPermission() {
@@ -134,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         detector.setProcessor(
-                new MultiProcessor.Builder<>(new FaceTrackerFactory(mOverlay, this))
+                new MultiProcessor.Builder<>(new FaceTrackerFactory(mOverlay, this, this))
                         .build());
 
         if (!detector.isOperational()) {
@@ -228,5 +230,42 @@ public class MainActivity extends AppCompatActivity {
                 mCameraSource = null;
             }
         }
+    }
+
+    public void setupNextMemeButton(Button nextMemeButton) {
+        nextMemeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FaceTracker.doNotTrack();
+                showEmotionPickerDialog();
+            }
+        });
+    }
+
+    private void showEmotionPickerDialog() {
+        final EmotionSelectionDialog dialog = new EmotionSelectionDialog(this);
+        dialog.setup(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface d, int which) {
+                if (faceTracker != null) {
+                    faceTracker.save(dialog.getSelectedEmotion(), userId);
+                    faceTracker.reset();
+                }
+
+                ServerCorrespondence.getMemeImage("/load_images.json", MainActivity.this, MainActivity.this);
+            }
+        });
+
+        dialog.show();
+    }
+
+    @Override
+    public void newFacetrackerCreated(FaceTracker faceTracker) {
+        this.faceTracker = faceTracker;
+    }
+
+    @Override
+    public void onMemeDownloadFinished() {
+        FaceTracker.doTrack();
     }
 }
