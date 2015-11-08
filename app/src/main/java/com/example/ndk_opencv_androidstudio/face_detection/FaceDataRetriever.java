@@ -28,11 +28,15 @@ import com.google.android.gms.vision.face.Landmark;
 public class FaceDataRetriever extends Overlay.ViewTransformation {
     private PointF posLeftEye = null, posRightEye = null, posLeftMouth = null,
         posRightMouth = null, posNoseBase = null, posBottomMouth = null,
-        posLeftCheek = null, posRightCheek = null;
+        posLeftCheek = null, posRightCheek = null, facePosition = null;
+
+    private int faceId = -1;
 
     private PointF[] landmarkPositions = null;
 
-    private float smilingProbability = Face.UNCOMPUTED_PROBABILITY;
+    private float smilingProbability = Face.UNCOMPUTED_PROBABILITY, faceEulerY = -1.0f,
+            faceEulerZ = -1.0f, faceWidth = -1.0f, faceHeight = -1.0f, leftEyeOpenProbability = -1.0f,
+            rightEyeOpenProbability = -1.0f;
 
     public FaceDataRetriever(Overlay overlay) {
         super(overlay);
@@ -43,17 +47,17 @@ public class FaceDataRetriever extends Overlay.ViewTransformation {
 
         smilingProbability = face.getIsSmilingProbability();
 
-        float faceEulerY = face.getEulerY();
-        float faceEulerZ = face.getEulerZ();
-        float faceHeight = face.getHeight();
-        float faceWidth = face.getWidth();
+        faceEulerY = face.getEulerY();
+        faceEulerZ = face.getEulerZ();
+        faceHeight = face.getHeight();
+        faceWidth = face.getWidth();
 
-        PointF facePosition = face.getPosition();
+        facePosition = face.getPosition();
 
-        int faceId = face.getId();
+        faceId = face.getId();
 
-        float isLeftEyeOpenProbability = face.getIsLeftEyeOpenProbability();
-        float isRightEyeOpenProbability = face.getIsRightEyeOpenProbability();
+        leftEyeOpenProbability = face.getIsLeftEyeOpenProbability();
+        rightEyeOpenProbability = face.getIsRightEyeOpenProbability();
 
         for(Landmark lm : face.getLandmarks()) {
             if(lm.getType() == Landmark.LEFT_EYE) posLeftEye = new PointF(translateX(lm.getPosition().x), translateY(lm.getPosition().y));
@@ -105,7 +109,7 @@ public class FaceDataRetriever extends Overlay.ViewTransformation {
         );
     }
 
-    public final double getSmilingProbability() {
+    public final float getSmilingProbability() {
         return smilingProbability;
     }
 
@@ -143,5 +147,37 @@ public class FaceDataRetriever extends Overlay.ViewTransformation {
 
     public final PointF[] getLandmarkPositions() {
         return landmarkPositions;
+    }
+
+    public PointF getFacePosition() {
+        return facePosition;
+    }
+
+    public int getFaceId() {
+        return faceId;
+    }
+
+    public float getFaceEulerY() {
+        return faceEulerY;
+    }
+
+    public float getFaceEulerZ() {
+        return faceEulerZ;
+    }
+
+    public float getFaceWidth() {
+        return faceWidth;
+    }
+
+    public float getFaceHeight() {
+        return faceHeight;
+    }
+
+    public float getLeftEyeOpenProbability() {
+        return leftEyeOpenProbability;
+    }
+
+    public float getRightEyeOpenProbability() {
+        return rightEyeOpenProbability;
     }
 }

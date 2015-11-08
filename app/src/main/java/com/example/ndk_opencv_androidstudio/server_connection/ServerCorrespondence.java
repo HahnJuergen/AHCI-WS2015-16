@@ -25,23 +25,17 @@ import java.net.URLConnection;
  */
 public class ServerCorrespondence {
     private static Context context;
-    private static int increment = 0;
+    private static int increment = -1;
 
     public static boolean downloading = false;
 
     public static void getMemeImage(final String param, final Context c) {
         downloading = true;
         context = c;
+        increment++;
+
 
         new DownloadTest().execute(param);
-    }
-
-    public static void getMemeImage(final String param, final Context c, int i) {
-        downloading = true;
-        context = c;
-
-        new DownloadTest().execute(param);
-        increment = i;
     }
 
     public static void updateWebView(final String[] urls) {

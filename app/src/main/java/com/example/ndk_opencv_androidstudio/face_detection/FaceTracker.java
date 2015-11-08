@@ -33,6 +33,8 @@ import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
+import org.opencv.core.Point;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -58,11 +60,30 @@ public class FaceTracker extends Tracker<Face> {
             public void onClick(View v) {
                 ServerCorrespondence.downloading = true;
                 isNextImage = true;
+                ++pic_id;
             }
         });
     }
 
-    private List<Double> happiness = new ArrayList<>();
+    private List<PointF> positionsLeftEyes = new ArrayList<>();
+    private List<PointF> positionsRightEyes = new ArrayList<>();
+    private List<PointF> positionsLeftMouth = new ArrayList<>();
+    private List<PointF> positionsRightMouth = new ArrayList<>();
+    private List<PointF> positionsNoseBase = new ArrayList<>();
+    private List<PointF> positionsBottomMouth = new ArrayList<>();
+    private List<PointF> positionsLeftCheek = new ArrayList<>();
+    private List<PointF> positionsRightCheek = new ArrayList<>();
+    private List<PointF> positionsFace = new ArrayList<>();
+
+    private List<Integer> faceIds = new ArrayList<>();
+
+    private List<Float> smilingProbability = new ArrayList<>();
+    private List<Float> eulerYFaceList = new ArrayList<>();
+    private List<Float> eulerZFaceList = new ArrayList<>();
+    private List<Float> faceWidthList = new ArrayList<>();
+    private List<Float> faceHeightList = new ArrayList<>();
+    private List<Float> leftEyeOpenProbabilities = new ArrayList<>();
+    private List<Float> rightEyeOpenProbabilities = new ArrayList<>();
 
     /**
      * Update the position/characteristics of the face within the overlay.
@@ -73,13 +94,33 @@ public class FaceTracker extends Tracker<Face> {
     public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
         if(!ServerCorrespondence.downloading) {
             mFaceDataRetriever.updateFace(face);
-            happiness.add((mFaceDataRetriever.getSmilingProbability()));
+
+            positionsLeftEyes.add(mFaceDataRetriever.getPosLeftEye());
+            positionsRightEyes.add(mFaceDataRetriever.getPosRightEye());
+            positionsLeftMouth.add(mFaceDataRetriever.getPosLeftMouth());
+            positionsRightMouth.add(mFaceDataRetriever.getPosRightMouth());
+            positionsNoseBase.add(mFaceDataRetriever.getPosNoseBase());
+            positionsBottomMouth.add(mFaceDataRetriever.getPosBottomMouth());
+            positionsLeftCheek.add(mFaceDataRetriever.getPosLeftCheek());
+            positionsRightCheek.add(mFaceDataRetriever.getPosRightCheek());
+            positionsFace.add(mFaceDataRetriever.getFacePosition());
+
+            faceIds.add(mFaceDataRetriever.getFaceId());
+
+            smilingProbability.add(mFaceDataRetriever.getSmilingProbability());
+            eulerYFaceList.add(mFaceDataRetriever.getFaceEulerY());
+            eulerZFaceList.add(mFaceDataRetriever.getFaceEulerZ());
+            faceWidthList.add(mFaceDataRetriever.getFaceWidth());
+            faceHeightList.add(mFaceDataRetriever.getFaceHeight());
+            leftEyeOpenProbabilities.add(mFaceDataRetriever.getLeftEyeOpenProbability());
+            rightEyeOpenProbabilities.add(mFaceDataRetriever.getRightEyeOpenProbability());
+
         } else if(isNextImage){
             ((Activity) context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     new AlertDialog.Builder(context).setTitle("Stimmt das?")
-                            .setMessage("Wir denken du fandest das Bild witzig! (" + getMaximum(happiness) + ")")
+                            .setMessage("Wir denken du fandest das Bild witzig! (" + getMaximum(smilingProbability) + ")")
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     Log.i("TEST", "POSITIVE");
@@ -98,33 +139,125 @@ public class FaceTracker extends Tracker<Face> {
                 }
             });
 
-            ServerCorrespondence.getMemeImage("/load_images.json", context, ++increment);
+            ServerCorrespondence.getMemeImage("/load_images.json", context);
 
             isNextImage = false;
         }
     }
+
+    private int pic_id = 0;
+    private final int USER_ID = 3;
 
     private void save() {
         //write everything to file
         //userid \t picid \t smile_probability \t ...
         
         try {
-            File file = new File(Environment.getExternalStorageDirectory(), "data.csv");
-            FileWriter fw = new FileWriter(file, true);
 
-            for(int i = 0; i < happiness.size(); i++) {
-                fw.append("Happiness: " + happiness.get(i));
+            String root = Environment.getExternalStorageDirectory().toString();
+            File dir = new File(root + "/user_test_data");
+            String fName = "data.csv";
+            if(!dir.exists()) {
+                dir.mkdirs();
+                File file = new File(dir, fName);
+                try {
+                    FileWriter fw = new FileWriter(file, true);
+                    fw.append("user_id\t"
+                            + "pic_id\t"
+                            + "sp\t"
+                            + "xle\t"
+                            + "yle\t"
+                            + "leop\t"
+                            + "xre\t"
+                            + "yre\t"
+                            + "reop\t"
+                            + "xlm\t"
+                            + "ylm\t"
+                            + "xrm\t"
+                            + "yrm\t"
+                            + "xlc\t"
+                            + "ylc\t"
+                            + "xrc\t"
+                            + "yrc\t"
+                            + "xnb\t"
+                            + "ynb\t"
+                            + "xbm\t"
+                            + "ybm\t"
+                            + "x_face\t"
+                            + "y_face\t"
+                            + "face_id\t"
+                            + "euler_y\t"
+                            + "euler_z\t"
+                            + "face_width\t"
+                            + "face_height\n"
+                            );
+
+                    fw.flush();
+                    fw.close();
+                } catch (Exception e) {}
             }
+
+            File file = new File(dir, fName);
+
+            try {
+                FileWriter fw = new FileWriter(file, true);
+
+                for(int i = 0; i < smilingProbability.size(); i++) {
+                    fw.append("" + USER_ID + "\t" + pic_id + "\t" + smilingProbability.get(i) + "\t");
+                    fw.append(getLineOfPointTuples(positionsLeftEyes.get(i)));
+                    fw.append("" + leftEyeOpenProbabilities.get(i) + "\t");
+                    fw.append(getLineOfPointTuples(positionsRightEyes.get(i)));
+                    fw.append("" + rightEyeOpenProbabilities.get(i) + "\t");
+                    fw.append(getLineOfPointTuples(positionsLeftMouth.get(i)));
+                    fw.append(getLineOfPointTuples(positionsRightMouth.get(i)));
+                    fw.append(getLineOfPointTuples(positionsLeftCheek.get(i)));
+                    fw.append(getLineOfPointTuples(positionsRightCheek.get(i)));
+                    fw.append(getLineOfPointTuples(positionsNoseBase.get(i)));
+                    fw.append(getLineOfPointTuples(positionsBottomMouth.get(i)));
+                    fw.append(getLineOfPointTuples(positionsFace.get(i)));
+
+                    fw.append("" + faceIds.get(i) + "\t");
+                    fw.append("" + eulerYFaceList.get(i) + "\t");
+                    fw.append("" + eulerZFaceList.get(i) + "\t");
+                    fw.append("" + faceWidthList.get(i) + "\t");
+                    fw.append("" + faceHeightList.get(i) + "\n");
+                }
+
+                fw.flush();
+                fw.close();
+            } catch (Exception e) {}
 
 
         } catch (Exception e) {}
     }
 
-    private void reset() {
-        happiness.clear();
+    private String getLineOfPointTuples(PointF p) {
+        return (p != null) ? ("" + p.x + "\t" + p.y + "\t") : ("NA\t");
     }
 
-    private double getMaximum(List<Double> l) {
+    private void reset() {
+        positionsLeftEyes.clear();
+        positionsRightEyes.clear();
+        positionsLeftMouth.clear();
+        positionsRightMouth.clear();
+        positionsNoseBase.clear();
+        positionsBottomMouth.clear();
+        positionsLeftCheek.clear();
+        positionsRightCheek.clear();
+        positionsFace.clear();
+
+        faceIds.clear();
+
+        smilingProbability.clear();
+        eulerYFaceList.clear();
+        eulerZFaceList.clear();
+        faceWidthList.clear();
+        faceHeightList.clear();
+        leftEyeOpenProbabilities.clear();
+        rightEyeOpenProbabilities.clear();
+    }
+
+    private double getMaximum(List<Float> l) {
         double max = -1d;
 
         for(double d : l) max = max < d ? d : max;
