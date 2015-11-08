@@ -23,53 +23,64 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"/>
-
         <de.ahci.memewebview.MemeWebView
             android:id="@+id/webview"
             android:layout_width="match_parent"
-            android:layout_height="435dp">
+            android:layout_height="match_parent"
+            android:layout_above="@+id/controls">
 
         </de.ahci.memewebview.MemeWebView>
 
-        <ImageView
-            android:id="@+id/emoticon"
-            android:layout_below="@id/webview"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:background="@android:color/white"
-            android:src="@android:drawable/btn_plus"/>
-
-        <TextView
-            android:id="@+id/pictureTitle"
-            android:layout_toRightOf="@id/emoticon"
-            android:layout_below="@id/webview"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:text="pictureTitle"
-            android:textSize="25sp"
-            android:gravity="center"
-            android:background="@android:color/white"/>
+            android:layout_height="96dp"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/controls"
+            android:background="@drawable/top_border"
+            >
 
-        <Button
-            android:id="@+id/buttonNext"
-            android:layout_width="75dp"
-            android:layout_height="55dp"
-            android:text="Next"
-            android:layout_alignParentRight="true"
-            android:layout_above="@id/pictureTitle"/>
 
-        <TextView
-            android:id="@+id/recognizedEmotion"
-            android:layout_toRightOf="@id/emoticon"
-            android:layout_below="@id/pictureTitle"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="emotion"
-            android:textSize="25sp"
-            android:gravity="center"
-            android:background="@android:color/white"/>
+            <!--<ImageView-->
+            <!--android:id="@+id/emoticon"-->
+            <!--android:layout_below="@id/webview"-->
+            <!--android:layout_width="100dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:background="@android:color/white"-->
+            <!--android:src="@android:drawable/btn_plus"/>-->
+
+            <!--<TextView-->
+            <!--android:id="@+id/pictureTitle"-->
+            <!--android:layout_toRightOf="@id/emoticon"-->
+            <!--android:layout_below="@id/webview"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="40dp"-->
+            <!--android:text="pictureTitle"-->
+            <!--android:textSize="25sp"-->
+            <!--android:gravity="center"-->
+            <!--android:background="@android:color/white"/>-->
+
+            <Button
+                android:id="@+id/buttonNext"
+                android:layout_width="wrap_content"
+                android:layout_height="55dp"
+                android:text="@string/activity_main_button_next"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"/>
+            <!--android:layout_above="@id/pictureTitle"/>-->
+
+            <!--<TextView-->
+            <!--android:id="@+id/recognizedEmotion"-->
+            <!--android:layout_toRightOf="@id/emoticon"-->
+            <!--android:layout_below="@id/pictureTitle"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:text="emotion"-->
+            <!--android:textSize="25sp"-->
+            <!--android:gravity="center"-->
+            <!--android:background="@android:color/white"/>-->
+
+        </RelativeLayout>
+
+
     </RelativeLayout>
 </RelativeLayout>
