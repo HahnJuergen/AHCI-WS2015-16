@@ -25,6 +25,7 @@ public class UserIdInputDialog {
     public void setup(DialogInterface.OnClickListener listener) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             dialog = new AlertDialog.Builder(context)
+                    .setTitle("Bitte Test-ID eingeben...")
                     .setPositiveButton("Ok", listener)
                     .setView(R.layout.user_id_input_dialog)
                     .setCancelable(false)
