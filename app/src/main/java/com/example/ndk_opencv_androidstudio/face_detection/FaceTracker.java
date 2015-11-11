@@ -73,6 +73,7 @@ public class FaceTracker extends Tracker<Face> {
     private static List<Float> leftEyeOpenProbabilities = new ArrayList<>();
     private static List<Float> rightEyeOpenProbabilities = new ArrayList<>();
 
+    private static List<Long> times = new ArrayList<>();
 
     public static void doNotTrack() {
         doNotTrack = true;
@@ -116,7 +117,7 @@ public class FaceTracker extends Tracker<Face> {
             faceHeightList.add(mFaceDataRetriever.getFaceHeight());
             leftEyeOpenProbabilities.add(mFaceDataRetriever.getLeftEyeOpenProbability());
             rightEyeOpenProbabilities.add(mFaceDataRetriever.getRightEyeOpenProbability());
-
+            times.add(System.currentTimeMillis());
         }
     }
 
@@ -198,7 +199,7 @@ public class FaceTracker extends Tracker<Face> {
                     fw.append("" + faceWidthList.get(i) + "\t");
                     fw.append("" + faceHeightList.get(i) + "\t");
                     fw.append("" + selectedEmotion + "\t");
-                    fw.append("" + System.currentTimeMillis() + "\n");
+                    fw.append("" + times.get(i) + "\n");
                 }
 
                 fw.flush();
@@ -235,6 +236,7 @@ public class FaceTracker extends Tracker<Face> {
         faceHeightList.clear();
         leftEyeOpenProbabilities.clear();
         rightEyeOpenProbabilities.clear();
+        times.clear();
     }
 
     private double getMaximum(List<Float> l) {
