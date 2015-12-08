@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.ndk_opencv_androidstudio.face_detection;
+package com.ahci.meme_recommender.face_detection;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -21,9 +21,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.google.android.gms.vision.CameraSource;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class Overlay extends View {
     private final Object mLock = new Object();

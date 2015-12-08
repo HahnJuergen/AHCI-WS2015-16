@@ -1,4 +1,4 @@
-package com.example.ndk_opencv_androidstudio;
+package com.ahci.meme_recommender;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

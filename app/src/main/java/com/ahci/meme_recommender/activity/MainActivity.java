@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.ndk_opencv_androidstudio.activity;
+package com.ahci.meme_recommender.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -33,14 +33,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 
-import com.example.ndk_opencv_androidstudio.R;
-import com.example.ndk_opencv_androidstudio.camera_preview.CameraSourcePreview;
-import com.example.ndk_opencv_androidstudio.face_detection.FaceTracker;
-import com.example.ndk_opencv_androidstudio.face_detection.FaceTrackerFactory;
-import com.example.ndk_opencv_androidstudio.face_detection.Overlay;
-import com.example.ndk_opencv_androidstudio.server_connection.ServerCorrespondence;
-import com.example.ndk_opencv_androidstudio.user_test_001.EmotionSelectionDialog;
-import com.example.ndk_opencv_androidstudio.user_test_001.UserIdInputDialog;
+import com.ahci.meme_recommender.R;
+import com.ahci.meme_recommender.camera_preview.CameraSourcePreview;
+import com.ahci.meme_recommender.face_detection.FaceTracker;
+import com.ahci.meme_recommender.face_detection.FaceTrackerFactory;
+import com.ahci.meme_recommender.face_detection.Overlay;
+import com.ahci.meme_recommender.server_connection.ServerCorrespondence;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
@@ -99,14 +97,14 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 
-        final UserIdInputDialog dialog = new UserIdInputDialog(this);
-        dialog.setup(new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface d, int which) {
-                userId = dialog.getUserId();
-            }
-        });
-        dialog.show();
+//        final UserIdInputDialog dialog = new UserIdInputDialog(this);
+//        dialog.setup(new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface d, int which) {
+//                userId = dialog.getUserId();
+//            }
+//        });
+//        dialog.show();
 
         ServerCorrespondence.getMemeImage("/load_images.json", this, this);
     }
@@ -143,6 +141,8 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         Context context = getApplicationContext();
         FaceDetector detector = new FaceDetector.Builder(context)
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
+                .setLandmarkType(FaceDetector.ALL_LANDMARKS)
+                .setMode(FaceDetector.ACCURATE_MODE)
                 .build();
 
         detector.setProcessor(
@@ -246,28 +246,30 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         nextMemeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FaceTracker.doNotTrack();
-                showEmotionPickerDialog();
-            }
-        });
-    }
-
-    private void showEmotionPickerDialog() {
-        final EmotionSelectionDialog dialog = new EmotionSelectionDialog(this);
-        dialog.setup(new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface d, int which) {
-                if (faceTracker != null) {
-                    faceTracker.save(dialog.getSelectedEmotion(), userId);
-                    faceTracker.reset();
-                }
-
+//                FaceTracker.doNotTrack();
+//                showEmotionPickerDialog();
+                faceTracker.reset();
                 ServerCorrespondence.getMemeImage("/load_images.json", MainActivity.this, MainActivity.this);
             }
         });
-
-        dialog.show();
     }
+
+//    private void showEmotionPickerDialog() {
+//        final EmotionSelectionDialog dialog = new EmotionSelectionDialog(this);
+//        dialog.setup(new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface d, int which) {
+//                if (faceTracker != null) {
+//                    faceTracker.save(dialog.getSelectedEmotion(), userId);
+//                    faceTracker.reset();
+//                }
+//
+//                ServerCorrespondence.getMemeImage("/load_images.json", MainActivity.this, MainActivity.this);
+//            }
+//        });
+//
+//        dialog.show();
+//    }
 
     @Override
     public void newFacetrackerCreated(FaceTracker faceTracker) {

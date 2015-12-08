@@ -1,4 +1,4 @@
-package com.example.ndk_opencv_androidstudio.user_test_001;
+package com.ahci.meme_recommender.user_test_001;
 
 /**
  * Created by jonbr on 08.11.2015.

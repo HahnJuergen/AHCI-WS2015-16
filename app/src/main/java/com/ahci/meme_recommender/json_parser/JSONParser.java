@@ -1,6 +1,4 @@
-package com.example.ndk_opencv_androidstudio.json_parser;
-
-import android.util.Log;
+package com.ahci.meme_recommender.json_parser;
 
 import org.json.*;
 

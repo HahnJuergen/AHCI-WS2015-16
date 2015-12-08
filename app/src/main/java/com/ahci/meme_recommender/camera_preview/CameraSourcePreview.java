@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.ndk_opencv_androidstudio.camera_preview;
+package com.ahci.meme_recommender.camera_preview;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -23,7 +23,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 
-import com.example.ndk_opencv_androidstudio.face_detection.Overlay;
+import com.ahci.meme_recommender.face_detection.Overlay;
 import com.google.android.gms.common.images.Size;
 import com.google.android.gms.vision.CameraSource;
 

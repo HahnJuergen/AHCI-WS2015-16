@@ -13,33 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.ndk_opencv_androidstudio.face_detection;
+package com.ahci.meme_recommender.face_detection;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.PointF;
 import android.os.Environment;
-import android.text.LoginFilter;
-import android.util.Log;
-import android.view.View;
-import android.webkit.WebView;
-import android.widget.Button;
 
-import com.example.ndk_opencv_androidstudio.R;
-import com.example.ndk_opencv_androidstudio.server_connection.ServerCorrespondence;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
-
-import org.opencv.core.Point;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class FaceTracker extends Tracker<Face> {

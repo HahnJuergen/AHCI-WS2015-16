@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.ndk_opencv_androidstudio.face_detection;
+package com.ahci.meme_recommender.face_detection;
 
 import android.graphics.PointF;
 
-import com.example.ndk_opencv_androidstudio.auxiliary.AnalyticGeometry;
+import com.ahci.meme_recommender.auxiliary.AnalyticGeometry;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.Landmark;
 

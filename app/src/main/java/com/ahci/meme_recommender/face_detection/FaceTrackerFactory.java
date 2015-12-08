@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.ndk_opencv_androidstudio.face_detection;
+package com.ahci.meme_recommender.face_detection;
 
 /**
  * Created by jurgenhahn on 27/10/15.
  */
 
 import android.content.Context;
-import android.webkit.WebView;
 
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;

@@ -1,4 +1,4 @@
-package com.example.ndk_opencv_androidstudio.auxiliary;
+package com.ahci.meme_recommender.auxiliary;
 
 import android.graphics.PointF;
 

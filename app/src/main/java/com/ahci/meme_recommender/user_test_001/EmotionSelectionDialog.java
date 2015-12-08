@@ -1,4 +1,4 @@
-package com.example.ndk_opencv_androidstudio.user_test_001;
+package com.ahci.meme_recommender.user_test_001;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -6,12 +6,11 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-import com.example.ndk_opencv_androidstudio.R;
+import com.ahci.meme_recommender.R;
 
 import java.util.ArrayList;
 import java.util.List;

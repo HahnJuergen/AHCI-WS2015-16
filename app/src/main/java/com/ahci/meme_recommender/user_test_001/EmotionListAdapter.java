@@ -1,4 +1,4 @@
-package com.example.ndk_opencv_androidstudio.user_test_001;
+package com.ahci.meme_recommender.user_test_001;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.ndk_opencv_androidstudio.R;
+import com.ahci.meme_recommender.R;
 
 import java.util.List;
 

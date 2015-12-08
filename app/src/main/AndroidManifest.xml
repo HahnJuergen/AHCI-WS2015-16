@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.ndk_opencv_androidstudio" >
+    package="com.ahci.meme_recommender" >
 
     <application
         android:allowBackup="true"
@@ -14,7 +14,7 @@
             android:value="face" />
 
         <activity
-            android:name=".activity.MainActivity"
+            android:name="com.ahci.meme_recommender.activity.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
 
