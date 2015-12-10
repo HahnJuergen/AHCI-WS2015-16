@@ -38,6 +38,7 @@ import com.ahci.meme_recommender.camera_preview.CameraSourcePreview;
 import com.ahci.meme_recommender.face_detection.FaceTracker;
 import com.ahci.meme_recommender.face_detection.FaceTrackerFactory;
 import com.ahci.meme_recommender.face_detection.Overlay;
+import com.ahci.meme_recommender.face_detection.user_face_watcher.FaceWatcherView;
 import com.ahci.meme_recommender.server_connection.ServerCorrespondence;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -166,6 +167,8 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
                 .setFacing(CameraSource.CAMERA_FACING_FRONT)
                 .setRequestedFps(30.0f)
                 .build();
+        FaceWatcherView.CAMERA_HEIGHT = 640;
+        FaceWatcherView.CAMERA_WIDTH = 480;
     }
 
     @Override
@@ -274,6 +277,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
     @Override
     public void newFacetrackerCreated(FaceTracker faceTracker) {
         this.faceTracker = faceTracker;
+        faceTracker.addOnUpdateListener((FaceWatcherView) findViewById(R.id.face_watcher_view));
     }
 
     @Override

@@ -18,6 +18,7 @@ package com.ahci.meme_recommender.face_detection;
 import android.content.Context;
 import android.graphics.PointF;
 import android.os.Environment;
+import android.util.Log;
 
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
@@ -27,7 +28,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FaceTracker extends Tracker<Face> {
 
@@ -61,6 +64,11 @@ public class FaceTracker extends Tracker<Face> {
     private static List<Float> rightEyeOpenProbabilities = new ArrayList<>();
 
     private static List<Long> times = new ArrayList<>();
+    private static Set<OnFaceUpdateListener> onFaceUpdateListeners;
+
+    static {
+        onFaceUpdateListeners = new HashSet<>();
+    }
 
     public static void doNotTrack() {
         doNotTrack = true;
@@ -75,6 +83,12 @@ public class FaceTracker extends Tracker<Face> {
         mFaceDataRetriever = new FaceDataRetriever(overlay);
     }
 
+    public void addOnUpdateListener(OnFaceUpdateListener onFaceUpdateListener) {
+        if(!onFaceUpdateListeners.contains(onFaceUpdateListener)) {
+            onFaceUpdateListeners.add(onFaceUpdateListener);
+        }
+    }
+
     /**
      * Update the position/characteristics of the face within the overlay.
      *
@@ -82,7 +96,12 @@ public class FaceTracker extends Tracker<Face> {
      */
     @Override
     public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
+        for(OnFaceUpdateListener listener : onFaceUpdateListeners) {
+            listener.onFaceUpdate(face);
+        }
+
         if(!doNotTrack) {
+
             mFaceDataRetriever.updateFace(face);
 
             positionsLeftEyes.add(mFaceDataRetriever.getPosLeftEye());

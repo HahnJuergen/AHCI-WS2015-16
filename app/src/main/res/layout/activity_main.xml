@@ -83,4 +83,12 @@
 
 
     </RelativeLayout>
+
+    <com.ahci.meme_recommender.face_detection.user_face_watcher.FaceWatcherView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/face_watcher_view">
+
+    </com.ahci.meme_recommender.face_detection.user_face_watcher.FaceWatcherView>
+
 </RelativeLayout>
