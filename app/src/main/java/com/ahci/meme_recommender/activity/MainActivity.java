@@ -176,16 +176,19 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         super.onResume();
 
         startCameraSource();
+        FaceWatcherView.RUN_TIMER = true;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mPreview.stop();
+        FaceWatcherView.RUN_TIMER = false;
     }
 
     @Override
     protected void onDestroy() {
+        FaceWatcherView.KILL_TIMER = true;
         super.onDestroy();
         if (mCameraSource != null) {
             mCameraSource.release();

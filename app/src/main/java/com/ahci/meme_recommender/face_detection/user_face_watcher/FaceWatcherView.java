@@ -19,6 +19,7 @@ import com.ahci.meme_recommender.face_detection.OnFaceUpdateListener;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.Landmark;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,12 +30,26 @@ import java.util.List;
 public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListener {
 
     private static final boolean LOGGING = true;
+    public static boolean RUN_TIMER = true;
+    public static boolean KILL_TIMER = false;
+
+    private static long timeLastFaceRetreived;
 
     public static int CAMERA_WIDTH;
     public static int CAMERA_HEIGHT;
 
     private WebView correctionView;
     private ImageView topView, leftView, rightView, bottomView;
+
+    private List<PointF> last5Positions;
+    private Thread timerThread;
+    private Timer timer;
+
+    public static void startTimer() {
+        if(!RUN_TIMER) {
+            RUN_TIMER = true;
+        }
+    }
 
     public FaceWatcherView(Context context) {
         super(context);
@@ -60,6 +75,12 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
     private void setup() {
         setupCorrectionNotificationView();
         setupBorderViews();
+
+        last5Positions = new ArrayList<>();
+
+        timer = new Timer();
+        timerThread = new Thread(timer);
+        timerThread.start();
 
         enableDisableViewGroup(this, false);
     }
@@ -112,6 +133,13 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
 
     public void onFaceUpdate(Face face) {
         Log.d("ahci_debug", "onFaceUpdate");
+
+        timeLastFaceRetreived = System.currentTimeMillis();
+
+        last5Positions.add(0, face.getPosition());
+        while (last5Positions.size() > 5) {
+            last5Positions.remove(5);
+        }
 
         if(face.getIsSmilingProbability() >= 0) {
             topView.setVisibility(View.INVISIBLE);
@@ -281,6 +309,10 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
         }
     }
 
+    private static synchronized long getTimeLastFaceRetreived() {
+        return timeLastFaceRetreived;
+    }
+
 
     private class Correction {
         private boolean hasCorrection = false;
@@ -302,6 +334,34 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
         static void d(String tag, String message) {
             if(LOGGING) {
                 android.util.Log.d(tag, message);
+            }
+        }
+    }
+
+    private class Timer implements Runnable{
+
+        @Override
+        public void run() {
+            while(!KILL_TIMER) {
+                if (RUN_TIMER) {
+                    long currentTime = System.currentTimeMillis();
+
+                    if (currentTime >= timeLastFaceRetreived + 500l) {
+                        FaceWatcherView.Log.d("ahci_debug", "no face found in the last 0.5 seconds");
+                    }
+
+                    try {
+                        Thread.sleep(50l);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        Thread.sleep(1000l);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
