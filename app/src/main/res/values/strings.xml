@@ -8,4 +8,13 @@
     <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
     <string name="activity_main_button_next">Nächstes Bild</string>
     <string name="choose_emotion_dialog_hint">Welches Emoticon beschreibt deine Reaktion auf das Bild am besten?</string>
+    <string name="activity_main_button_previous">Zurück</string>
+    <string name="no_network_enabled_title">Keine Internetverbindung</string>
+    <string name="no_network_enabled_body">Möchten Sie die Interneteinstellungen öffnen?</string>
+    <string name="open_network">Einstellungen</string>
+    <string name="close_app">App schließen</string>
+    <string name="server_offline">Meme-Server ist offline</string>
+    <string name="server_offline_body">Die App kann deswegen im Moment nicht Verwenden werden. Versuchen Sie es später wieder.</string>
+    <string name="all_servers_offline">Probleme mit Internetverbindung</string>
+    <string name="all_servers_offline_body">Ihre Internetverbindung ist aktiviert, aber es können keine Daten abgerufen werden. Bitte versuchen Sie es später erneut.</string>
 </resources>

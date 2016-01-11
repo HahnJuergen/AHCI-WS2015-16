@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListener {
 
-    private static final boolean LOGGING = true;
+    private static final boolean LOGGING = false;
     public static boolean RUN_TIMER = true;
     public static boolean KILL_TIMER = false;
 
@@ -39,7 +39,6 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
     public static int CAMERA_HEIGHT;
 
     private WebView correctionView;
-    private ImageView topView, leftView, rightView, bottomView;
 
     private List<PointF> last5Positions;
     private Thread timerThread;
@@ -74,7 +73,6 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
 
     private void setup() {
         setupCorrectionNotificationView();
-        setupBorderViews();
 
         last5Positions = new ArrayList<>();
 
@@ -83,37 +81,6 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
         timerThread.start();
 
         enableDisableViewGroup(this, false);
-    }
-
-    private void setupBorderViews() {
-        topView = new ImageView(this.getContext());
-        leftView = new ImageView(this.getContext());
-        rightView = new ImageView(this.getContext());
-        bottomView = new ImageView(this.getContext());
-
-        setLayoutParamsForBorderView(topView, LayoutParams.MATCH_PARENT, 50, RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE,
-                RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-        setLayoutParamsForBorderView(bottomView, LayoutParams.MATCH_PARENT, 50, RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE,
-                RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-        setLayoutParamsForBorderView(leftView, 50, LayoutParams.MATCH_PARENT, RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE,
-                RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
-        setLayoutParamsForBorderView(rightView, 50, LayoutParams.MATCH_PARENT, RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE,
-                RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
-
-        this.addView(topView);
-        this.addView(leftView);
-        this.addView(rightView);
-        this.addView(bottomView);
-    }
-
-    private void setLayoutParamsForBorderView(View borderView, int width, int height, int rule1, int rule1Val, int rule2, int rule2Val) {
-        LayoutParams params = new LayoutParams(width, height);
-        params.addRule(rule1, rule1Val);
-        params.addRule(rule2, rule2Val);
-        borderView.setLayoutParams(params);
-
-        borderView.setBackgroundColor(Color.argb(255, 255, 100, 100));
-        borderView.setVisibility(View.INVISIBLE);
     }
 
     private void setupCorrectionNotificationView() {
@@ -142,11 +109,6 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
         }
 
         if(face.getIsSmilingProbability() >= 0) {
-            topView.setVisibility(View.INVISIBLE);
-            leftView.setVisibility(View.INVISIBLE);
-            rightView.setVisibility(View.INVISIBLE);
-            bottomView.setVisibility(View.INVISIBLE);
-
             correctionView.setVisibility(View.INVISIBLE);
 
             invalidate();
@@ -179,28 +141,16 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
 
             if(correction.fixXPos == -1) {
                 Log.d("ahci_debug", "Move head to the left");
-                rightView.setVisibility(View.VISIBLE);
-                leftView.setVisibility(View.INVISIBLE);
             } else if (correction.fixXPos == 1) {
                 Log.d("ahci_debug", "Move head to the right");
-                leftView.setVisibility(View.VISIBLE);
-                rightView.setVisibility(View.INVISIBLE);
             }
 
             if(correction.fixYPos == -1) {
                 Log.d("ahci_debug", "Move head downwards");
-                topView.setVisibility(View.VISIBLE);
-                bottomView.setVisibility(View.INVISIBLE);
             } else if(correction.fixYPos == 1) {
                 Log.d("ahci_debug", "Move head upwards");
-                bottomView.setVisibility(View.VISIBLE);
-                topView.setVisibility(View.INVISIBLE);
             }
 
-            invalidate();
-            for(int i = 0; i < this.getChildCount(); i++) {
-                this.getChildAt(i).invalidate();
-            }
         } else {
             correctionView.setVisibility(View.INVISIBLE);
         }

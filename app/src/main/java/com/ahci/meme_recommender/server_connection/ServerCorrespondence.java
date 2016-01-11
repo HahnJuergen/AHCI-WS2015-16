@@ -8,6 +8,7 @@ import android.webkit.WebViewClient;
 
 import com.ahci.meme_recommender.R;
 import com.ahci.meme_recommender.json_parser.JSONParser;
+import com.ahci.meme_recommender.util.NetworkState;
 
 import org.json.JSONException;
 
@@ -21,18 +22,23 @@ import java.net.URLConnection;
  * Created by jurgenhahn on 27/10/15.
  */
 public class ServerCorrespondence {
+
     private static Context context;
     private static int increment = -1;
 
     public static boolean downloading = false;
 
     public static void getMemeImage(final String param, final Context c, OnMemeDownloadFinishedListener listener) {
+        if(!NetworkState.getInstance(c).isOnline()) {
+            listener.onNoNetworkAvailable();
+            return;
+        }
+
         downloading = true;
         context = c;
         increment++;
 
-
-        new DownloadTest(listener).execute(param);
+        new DownloadTask(listener).execute(param);
     }
 
     public static void updateWebView(final String[] urls) {
@@ -54,36 +60,56 @@ public class ServerCorrespondence {
         });
     }
 
-    private static class DownloadTest extends AsyncTask<String, Void, String> {
+    private static class DownloadTask extends AsyncTask<String, Void, String> {
 
         private OnMemeDownloadFinishedListener listener;
 
-        public DownloadTest(OnMemeDownloadFinishedListener listener) {
+        boolean noConnectionToServer = false;
+        boolean noConnectionAtAll = false;
+
+        public DownloadTask(OnMemeDownloadFinishedListener listener) {
             this.listener = listener;
         }
 
         @Override
         protected String doInBackground(String... params) {
-            String s = "";
             try {
-                URL url = new URL("http://192.168.0.165:8080" + params[0]);
+                return getMemeServerResponse(params);
+            } catch (Exception e) {
+                try {
+                    noConnectionToServer = true;
+                    tryToConnectToGoogle();
+                } catch (Exception e2) {
+                    noConnectionAtAll = true;
+                }
+            }
+            return "";
+        }
 
-                URLConnection connection = url.openConnection();
-                connection.setDoOutput(true);
-                connection.connect();
+        private void tryToConnectToGoogle() throws Exception {
+            URL url = new URL("http://www.google.com");
+            URLConnection connection = url.openConnection();
+            connection.setConnectTimeout(200);
+            connection.connect();
+        }
 
-                InputStream is = connection.getInputStream();
+        private String getMemeServerResponse(String... params) throws Exception {
+            URL url = new URL("http://192.168.0.165:8080" + params[0]);
 
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            URLConnection connection = url.openConnection();
+            connection.setDoOutput(true);
+            connection.connect();
 
-                String line;
+            InputStream is = connection.getInputStream();
 
-                while ((line = br.readLine()) != null)
-                   s += line;
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-            } catch (Exception e) { e.printStackTrace(); }
+            StringBuilder toReturn = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null)
+                toReturn.append(line);
 
-            return s;
+            return toReturn.toString();
         }
 
         @Override
@@ -93,14 +119,21 @@ public class ServerCorrespondence {
 
         @Override
         protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            try {
-                String[] urls = JSONParser.getImageURLs(JSONParser.getRootObject(s).getJSONArray("images"));
+            if(!noConnectionToServer) {
+                super.onPostExecute(s);
+                try {
+                    String[] urls = JSONParser.getImageURLs(JSONParser.getRootObject(s).getJSONArray("images"));
 
-                updateWebView(urls);
-                listener.onMemeDownloadFinished();
+                    updateWebView(urls);
+                    listener.onMemeDownloadFinished();
 
-            } catch(JSONException je) {}
+                } catch(JSONException je) {}
+
+            } else if(!noConnectionAtAll) {
+                listener.onNoConnectionToServerPossible();
+            } else {
+                listener.onNoConnectionAtAllPossible();
+            }
         }
 
         @Override
@@ -111,5 +144,21 @@ public class ServerCorrespondence {
 
     public interface OnMemeDownloadFinishedListener {
         public void onMemeDownloadFinished();
+
+        /**
+         * The user has disabled all connections. This error can be caught.
+         */
+        public void onNoNetworkAvailable();
+
+        /**
+         * The server is offline. Nothing can be done then.
+         */
+        public void onNoConnectionToServerPossible();
+
+        /**
+         * The user has enabled networking, but the device can't access any web page.
+         * Waiting for a couple of seconds might be the best option in this case.
+         */
+        public void onNoConnectionAtAllPossible();
     }
 }

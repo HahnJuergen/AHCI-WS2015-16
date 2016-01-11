@@ -31,55 +31,89 @@
 
         </de.ahci.memewebview.MemeWebView>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="96dp"
+            android:layout_height="57dp"
             android:layout_alignParentBottom="true"
             android:id="@+id/controls"
             android:background="@drawable/top_border"
-            >
+            android:weightSum="3"
+            android:paddingTop="2dp">
 
-
-            <!--<ImageView-->
-            <!--android:id="@+id/emoticon"-->
-            <!--android:layout_below="@id/webview"-->
-            <!--android:layout_width="100dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:background="@android:color/white"-->
-            <!--android:src="@android:drawable/btn_plus"/>-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/pictureTitle"-->
-            <!--android:layout_toRightOf="@id/emoticon"-->
-            <!--android:layout_below="@id/webview"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="40dp"-->
-            <!--android:text="pictureTitle"-->
-            <!--android:textSize="25sp"-->
-            <!--android:gravity="center"-->
-            <!--android:background="@android:color/white"/>-->
-
-            <Button
-                android:id="@+id/buttonNext"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/relative_layout_previous"
+                android:layout_width="0dp"
                 android:layout_height="55dp"
-                android:text="@string/activity_main_button_next"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"/>
-            <!--android:layout_above="@id/pictureTitle"/>-->
+                android:layout_weight="1"
+                android:background="@drawable/rl_click_bg_selector"
+                android:clickable="true">
 
-            <!--<TextView-->
-            <!--android:id="@+id/recognizedEmotion"-->
-            <!--android:layout_toRightOf="@id/emoticon"-->
-            <!--android:layout_below="@id/pictureTitle"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:text="emotion"-->
-            <!--android:textSize="25sp"-->
-            <!--android:gravity="center"-->
-            <!--android:background="@android:color/white"/>-->
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentTop="true"
+                    android:src="@drawable/ic_chevron_left_black_48dp"
+                    />
 
-        </RelativeLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="15dp"
+                    android:text="@string/activity_main_button_previous"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="12dp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="3dp"
+                    />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/relative_layout_emoticon"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_weight="1"
+                android:background="@drawable/left_and_right_border"
+                android:clickable="true">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/happy"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/relative_layout_next"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_weight="1"
+                android:background="@drawable/rl_click_bg_selector"
+                android:clickable="true">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentTop="true"
+                    android:src="@drawable/ic_chevron_right_black_48dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="15dp"
+                    android:text="@string/activity_main_button_next"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:textSize="12dp"
+                    android:textColor="#666666"
+                    android:layout_marginBottom="3dp"
+                    />
+
+            </RelativeLayout>
+
+        </LinearLayout>
 
 
     </RelativeLayout>
