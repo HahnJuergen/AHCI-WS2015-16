@@ -3,9 +3,9 @@
 
     <string name="action_settings">Settings</string>
     <string name="ok">OK</string>
-    <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
-    <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
-    <string name="low_storage_error">Face detector dependencies cannot be downloaded due to low device storage</string>
+    <string name="permission_camera_rationale">Kamerazugriff wird für die Gesichtserkennung benötigt</string>
+    <string name="no_camera_permission">Die App kann ohne Kamerazugriff nicht funktionieren. Die App wird sich jetzt schließen.</string>
+    <string name="low_storage_error">Die für die Gesichtserkennung notwendigen Dateien können nicht heruntergeladen werden, weil das Gerät zu wenig freien Speicherplatz hat.</string>
     <string name="activity_main_button_next">Nächstes Bild</string>
     <string name="choose_emotion_dialog_hint">Welches Emoticon beschreibt deine Reaktion auf das Bild am besten?</string>
     <string name="activity_main_button_previous">Zurück</string>
@@ -14,7 +14,7 @@
     <string name="open_network">Einstellungen</string>
     <string name="close_app">App schließen</string>
     <string name="server_offline">Meme-Server ist offline</string>
-    <string name="server_offline_body">Die App kann deswegen im Moment nicht Verwenden werden. Versuchen Sie es später wieder.</string>
+    <string name="server_offline_body">Die App kann deswegen im Moment nicht verwendet werden. Versuchen Sie es später wieder.</string>
     <string name="all_servers_offline">Probleme mit Internetverbindung</string>
-    <string name="all_servers_offline_body">Ihre Internetverbindung ist aktiviert, aber es können keine Daten abgerufen werden. Bitte versuchen Sie es später erneut.</string>
+    <string name="all_servers_offline_body">Ihre Internetverbindung ist aktiviert, aber es können keine Daten abgerufen werden. Versuchen Sie es später wieder.</string>
 </resources>
