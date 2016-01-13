@@ -34,7 +34,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 
 import com.ahci.meme_recommender.R;
@@ -45,7 +44,9 @@ import com.ahci.meme_recommender.face_detection.Overlay;
 import com.ahci.meme_recommender.face_detection.user_face_watcher.FaceWatcherView;
 import com.ahci.meme_recommender.json_parser.JSONParser;
 import com.ahci.meme_recommender.model.Rating;
+import com.ahci.meme_recommender.model.Storage;
 import com.ahci.meme_recommender.server_connection.ServerCorrespondence;
+import com.ahci.meme_recommender.util.MemeWebViewWrapper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
@@ -57,11 +58,13 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements FaceTrackerFactory.OnNewTrackerListener,
     ServerCorrespondence.ServerErrorHandler {
     private static final String TAG = "FaceTracker";
+
+    /** Only value that works right now is 1... */
+    private static final int SITES_LOADED_AT_ONCE = 1;
 
     private CameraSource mCameraSource = null;
 
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
     private RelativeLayout prevButton;
     private RelativeLayout emoticonButton;
 
-    private WebView memeWebView;
+    private MemeWebViewWrapper memeWebViewWrapper;
 
     private int userId = -1;
     private ServerCorrespondence.ServerResponseHandler onMemeDownloadListener;
@@ -94,13 +97,18 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         } else {
             setup();
             if(userId != -1) {
-                loadNextMeme();
+                loadFirstMemes();
             }
         }
     }
 
+    private void loadFirstMemes() {
+        ServerCorrespondence.getMemeImages(userId, SITES_LOADED_AT_ONCE + 1, Rating.loadRatingsToSendToServer(new Storage(this)),
+                this, onMemeDownloadListener, this);
+    }
+
     private void loadNextMeme() {
-        ServerCorrespondence.getMemeImage(userId, new ArrayList<Rating>(),
+        ServerCorrespondence.getMemeImages(userId, SITES_LOADED_AT_ONCE, Rating.loadRatingsToSendToServer(new Storage(this)),
                 this, onMemeDownloadListener, this);
     }
 
@@ -119,16 +127,8 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
     }
 
     private void setupMemeWebView() {
-        memeWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                ServerCorrespondence.downloading = false;
-            }
-        });
-
-        memeWebView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; Android 4.4; Nexus 5 Build/_BuildID_) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36\n");
-        memeWebView.getSettings().setJavaScriptEnabled(true);
-        memeWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        memeWebViewWrapper = new MemeWebViewWrapper(this,
+                (RelativeLayout) findViewById(R.id.webview_wrapper), SITES_LOADED_AT_ONCE);
     }
 
     /**
@@ -326,12 +326,15 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
                 FaceTracker.doNotTrack();
                 if(faceTracker != null) faceTracker.reset();
                 loadNextMeme();
+                memeWebViewWrapper.showNext();
             }
         });
     }
 
     private void updateWebView(String... urls) {
-        memeWebView.loadUrl(urls[0]);
+        for(int i = 0; i < urls.length; i++) {
+            memeWebViewWrapper.loadUrl(urls[i]);
+        }
     }
 
     /* @TODO */
@@ -421,7 +424,6 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         nextButton = (RelativeLayout) this.findViewById(R.id.relative_layout_next);
         prevButton = (RelativeLayout) this.findViewById(R.id.relative_layout_previous);
         emoticonButton = (RelativeLayout) this.findViewById(R.id.relative_layout_emoticon);
-        memeWebView = (WebView) findViewById(R.id.webview);
     }
 
     private void getIdFromServer() {
@@ -431,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
                 JSONTokener tokener = new JSONTokener(response);
                 try {
                     JSONObject obj = (JSONObject) tokener.nextValue();
-                    if(obj.getString("status").equals("ok")) {
+                    if (obj.getString("status").equals("ok")) {
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putInt("user_id", obj.getInt("id"));
@@ -439,7 +441,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
 
                         // this has not happened at this point, so the "basic usage"
                         // is started now!
-                        loadNextMeme();
+                        loadFirstMemes();
 
                     } else {
                         throw new Exception("Response: Status was not \"ok\".");

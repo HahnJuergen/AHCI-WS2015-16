@@ -25,26 +25,28 @@ public class ServerCorrespondence {
 
     private static Context context;
 
-    public static boolean downloading = false;
-
     public static void requestId(final Context c, ServerResponseHandler listener,
                                  ServerErrorHandler errorHandler) {
-
-    }
-
-    public static void getMemeImage(int userId, List<Rating> ratings,
-            final Context c, final ServerResponseHandler listener,
-                                    ServerErrorHandler errorHandler) {
         if(!NetworkState.getInstance(c).isOnline()) {
             errorHandler.onNoNetworkAvailable();
             return;
         }
 
-        downloading = true;
+        new DownloadTask(listener, SERVER + REQUEST_ID, errorHandler).execute();
+    }
+
+    public static void getMemeImages(int userId, int howMany, List<Rating> ratings,
+                                     final Context c, final ServerResponseHandler listener,
+                                     ServerErrorHandler errorHandler) {
+        if(!NetworkState.getInstance(c).isOnline()) {
+            errorHandler.onNoNetworkAvailable();
+            return;
+        }
+
         context = c;
 
         new DownloadTask(listener, SERVER + GET_MEMES + "?"
-                + "user_id=" + userId + "&" + "how_many=1"
+                + "user_id=" + userId + "&" + "how_many=" + howMany
                 + Rating.toUrlParam(ratings, true), errorHandler).execute();
     }
 

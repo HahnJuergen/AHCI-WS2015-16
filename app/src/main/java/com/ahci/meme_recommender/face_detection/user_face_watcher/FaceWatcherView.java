@@ -109,9 +109,6 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
         }
 
         if(face.getIsSmilingProbability() >= 0) {
-            correctionView.setVisibility(View.INVISIBLE);
-
-            invalidate();
             return;
         }
 
@@ -129,14 +126,8 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
 
             if(correction.fixRotation == -1) {
                 Log.d("ahci_debug", "Turn head to left!!");
-
-                correctionView.loadUrl("file:///android_asset/turn_left_no_transp.gif");
-                correctionView.setVisibility(View.VISIBLE);
             } else if(correction.fixRotation == 1) {
                 Log.d("ahci_debug", "Turn head to right!!");
-
-                correctionView.loadUrl("file:///android_asset/turn_right_no_transp.gif");
-                correctionView.setVisibility(View.VISIBLE);
             }
 
             if(correction.fixXPos == -1) {

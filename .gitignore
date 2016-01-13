@@ -6,3 +6,4 @@
 /build
 opencv-java/build
 .idea/
+*.iml

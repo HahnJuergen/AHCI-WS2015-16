@@ -23,13 +23,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <de.ahci.memewebview.MemeWebView
-            android:id="@+id/webview"
+        <RelativeLayout
+            android:id="@+id/webview_wrapper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/controls">
 
-        </de.ahci.memewebview.MemeWebView>
+            <de.ahci.memewebview.MemeWebView
+                android:id="@+id/webview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </de.ahci.memewebview.MemeWebView>
+
+
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
