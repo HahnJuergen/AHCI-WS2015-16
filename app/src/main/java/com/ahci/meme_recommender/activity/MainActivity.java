@@ -23,8 +23,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -33,7 +35,6 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.ahci.meme_recommender.R;
@@ -42,6 +43,8 @@ import com.ahci.meme_recommender.face_detection.FaceTracker;
 import com.ahci.meme_recommender.face_detection.FaceTrackerFactory;
 import com.ahci.meme_recommender.face_detection.Overlay;
 import com.ahci.meme_recommender.face_detection.user_face_watcher.FaceWatcherView;
+import com.ahci.meme_recommender.json_parser.JSONParser;
+import com.ahci.meme_recommender.model.Rating;
 import com.ahci.meme_recommender.server_connection.ServerCorrespondence;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -49,10 +52,15 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.face.FaceDetector;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements FaceTrackerFactory.OnNewTrackerListener,
-    ServerCorrespondence.OnMemeDownloadFinishedListener {
+    ServerCorrespondence.ServerErrorHandler {
     private static final String TAG = "FaceTracker";
 
     private CameraSource mCameraSource = null;
@@ -73,26 +81,35 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
     private WebView memeWebView;
 
     private int userId = -1;
+    private ServerCorrespondence.ServerResponseHandler onMemeDownloadListener;
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.activity_main);
+        userId = getId();
 
         if(firstAppStart()) {
             showTutorial();
         } else {
             setup();
-            ServerCorrespondence.getMemeImage("/load_images.json", this, this);
+            if(userId != -1) {
+                loadNextMeme();
+            }
         }
     }
 
+    private void loadNextMeme() {
+        ServerCorrespondence.getMemeImage(userId, new ArrayList<Rating>(),
+                this, onMemeDownloadListener, this);
+    }
 
     private void setup() {
         referenceViews();
         setupControlButtons();
         checkCamera();
         setupMemeWebView();
+        setupOnMemeDownloadListener();
     }
 
     private void setupControlButtons() {
@@ -126,9 +143,34 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         return false;
     }
 
+    private int getId() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if(!prefs.contains("user_id")) {
+            getIdFromServer();
+            return -1;
+        } else {
+            return prefs.getInt("user_id", -1);
+        }
+    }
+
     /** @TODO implement this */
     private void showTutorial() {
 
+    }
+
+    private void setupOnMemeDownloadListener() {
+        this.onMemeDownloadListener = new ServerCorrespondence.ServerResponseHandler() {
+            @Override
+            public void handleResponse(String response) {
+                try {
+                    String[] urls = JSONParser.getImageURLs(JSONParser.getRootObject(response).getJSONArray("images"));
+                    updateWebView(urls);
+                    FaceTracker.doTrack();
+
+                } catch (JSONException je) {
+                }
+            }
+        };
     }
 
     /**
@@ -283,9 +325,13 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
             public void onClick(View v) {
                 FaceTracker.doNotTrack();
                 if(faceTracker != null) faceTracker.reset();
-                ServerCorrespondence.getMemeImage("/load_images.json", MainActivity.this, MainActivity.this);
+                loadNextMeme();
             }
         });
+    }
+
+    private void updateWebView(String... urls) {
+        memeWebView.loadUrl(urls[0]);
     }
 
     /* @TODO */
@@ -303,14 +349,6 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
     public void newFacetrackerCreated(FaceTracker faceTracker) {
         this.faceTracker = faceTracker;
         faceTracker.addOnUpdateListener((FaceWatcherView) findViewById(R.id.face_watcher_view));
-    }
-
-    /**
-     * Callback that is called when the HTML for a meme is downloaded.
-     */
-    @Override
-    public void onMemeDownloadFinished() {
-        FaceTracker.doTrack();
     }
 
     /**
@@ -385,4 +423,32 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         emoticonButton = (RelativeLayout) this.findViewById(R.id.relative_layout_emoticon);
         memeWebView = (WebView) findViewById(R.id.webview);
     }
+
+    private void getIdFromServer() {
+        ServerCorrespondence.requestId(this, new ServerCorrespondence.ServerResponseHandler() {
+            @Override
+            public void handleResponse(String response) {
+                JSONTokener tokener = new JSONTokener(response);
+                try {
+                    JSONObject obj = (JSONObject) tokener.nextValue();
+                    if(obj.getString("status").equals("ok")) {
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt("user_id", obj.getInt("id"));
+                        editor.commit();
+
+                        // this has not happened at this point, so the "basic usage"
+                        // is started now!
+                        loadNextMeme();
+
+                    } else {
+                        throw new Exception("Response: Status was not \"ok\".");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, this);
+    }
+
 }
