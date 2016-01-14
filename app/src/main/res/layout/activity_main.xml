@@ -86,10 +86,11 @@
                 android:clickable="true">
 
                 <ImageView
+                    android:id="@+id/emoticon_icon"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_centerInParent="true"
-                    android:src="@drawable/happy"/>
+                    android:src="@drawable/emoticon_neutral"/>
 
             </RelativeLayout>
 
@@ -127,7 +128,8 @@
             android:id="@+id/emoticon_for_swipe_animation_wrapper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#ffffff"
+            android:layout_margin="40dp"
+            android:background="@drawable/swipe_emoticon_background"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/emoticon_for_swipe_animation"

@@ -1,13 +1,18 @@
 package com.ahci.meme_recommender.face_detection.user_face_watcher;
 
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,7 +44,7 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
 
     private TextView correctionView;
 
-    private List<Float> last5SmilingValues;
+    private List<Float> last15SmilingValues;
     private Thread timerThread;
     private Timer timer;
 
@@ -47,6 +52,8 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
 
     private boolean cantFindFaceOrSmile;
     private String errorViewMessage;
+
+    private boolean hideIfNecessary;
 
     public static void startTimer() {
         if(!RUN_TIMER) {
@@ -75,12 +82,66 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
         setup();
     }
 
+    /* @TODO decomposition */
+    public void onFaceUpdate(Face face) {
+        timeLastFaceRetreived = System.currentTimeMillis();
+
+        last15SmilingValues.add(0, face.getIsSmilingProbability());
+        while (last15SmilingValues.size() > 15) {
+            last15SmilingValues.remove(15);
+        }
+
+        if(face.getIsSmilingProbability() >= 0) {
+            return;
+        } else {
+            boolean hideError = true;
+            int smileCount = 0;
+            for(int i = 0; i < last15SmilingValues.size(); i++) {
+                if(last15SmilingValues.get(i) > 0) {
+                    smileCount++;
+                }
+            }
+
+            if(smileCount >= last15SmilingValues.size() - 5) hideError = true;
+            else hideError = false;
+
+            Message msg = new Message();
+            if(hideError) {
+                msg.what = HIDE;
+            } else {
+                Bundle bundle = new Bundle();
+                bundle.putString("message", getContext().getResources().getString(R.string.cant_detect_smile));
+                msg.setData(bundle);
+                msg.what = SHOW;
+
+            }
+            correctionViewHandler.sendMessage(msg);
+        }
+    }
+
+    /**
+     * Keeps messages hidden.
+     */
+    public void hideMessagesIfNecessary() {
+        hideIfNecessary = true;
+        correctionView.setVisibility(View.GONE);
+    }
+
+    /**
+     * Shows messages (not automatically, only if it is necessary.)
+     */
+    public void showMessagesIfNecessary() {
+        hideIfNecessary = false;
+    }
+
     private void setup() {
         cantFindFaceOrSmile = true;
+        hideIfNecessary = false;
+
         errorViewMessage = "";
         setupCorrectionNotificationView();
 
-        last5SmilingValues = new ArrayList<>();
+        last15SmilingValues = new ArrayList<>();
 
         timer = new Timer();
         timerThread = new Thread(timer);
@@ -110,58 +171,40 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
     private void setupCorrectionNotificationView() {
         correctionView = new TextView(this.getContext());
 
-        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, 100);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
         params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-        params.setMargins(0, 0, 0, 50);
-        correctionView.setBackgroundColor(Color.WHITE);
+        params.setMargins(
+                (int) convertDpToPixel(60, getContext()),
+                0,
+                (int) convertDpToPixel(60, getContext()),
+                (int) convertDpToPixel(70, getContext()));
+
+
+        correctionView.setBackgroundResource(R.drawable.swipe_emoticon_background);
         correctionView.setLayoutParams(params);
+        correctionView.setPadding(20, 20, 20, 20);
+        correctionView.setTextColor(Color.rgb(200, 30, 30));
+        correctionView.setTypeface(null, Typeface.BOLD);
+        correctionView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+
+
 
         correctionView.setVisibility(View.GONE);
 
         this.addView(correctionView);
     }
 
-    public void onFaceUpdate(Face face) {
-        timeLastFaceRetreived = System.currentTimeMillis();
-
-        last5SmilingValues.add(0, face.getIsSmilingProbability());
-        while (last5SmilingValues.size() > 5) {
-            last5SmilingValues.remove(5);
-        }
-
-        if(face.getIsSmilingProbability() >= 0) {
-            return;
-        } else {
-            for(int i = 0; i < last5SmilingValues.size(); i++) {
-                if(last5SmilingValues.get(i) > 0) {
-                    Message msg = new Message();
-                    msg.what = HIDE;
-                    correctionViewHandler.sendMessage(msg);
-                }
-
-                if(i == last5SmilingValues.size() - 1 && i >= 3) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("message", getContext().getResources().getString(R.string.cant_detect_smile));
-                    Message msg = new Message();
-                    msg.setData(bundle);
-                    msg.what = SHOW;
-                    correctionViewHandler.sendMessage(msg);
-                }
-            }
-        }
-    }
-
     private void hideErrorMessage() {
-        if(!cantFindFaceOrSmile)
-            correctionView.setVisibility(View.GONE);
+        correctionView.setVisibility(View.GONE);
         cantFindFaceOrSmile = true;
     }
 
     private void showErrorMessage(String newMessage) {
-        if(cantFindFaceOrSmile) {
+        if(!hideIfNecessary) {
             correctionView.setVisibility(View.VISIBLE);
         }
+
         cantFindFaceOrSmile = false;
         if(!newMessage.equals(errorViewMessage)) {
             correctionView.setText(newMessage);
@@ -252,6 +295,34 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
                 }
             }
         }
+    }
+
+
+    // http://stackoverflow.com/questions/4605527/converting-pixels-to-dp
+    /**
+     * This method converts dp unit to equivalent pixels, depending on device density.
+     *
+     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent px equivalent to dp depending on device density
+     */
+    public static float convertDpToPixel(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return dp * (metrics.densityDpi / 160f);
+    }
+
+    /**
+     * This method converts device specific pixels to density independent pixels.
+     *
+     * @param px A value in px (pixels) unit. Which we need to convert into db
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent dp equivalent to px value
+     */
+    public static float convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return px / (metrics.densityDpi / 160f);
     }
 
 }

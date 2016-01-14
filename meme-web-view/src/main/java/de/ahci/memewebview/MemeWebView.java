@@ -130,9 +130,11 @@ public class MemeWebView extends WebView {
      */
     @Override
     public void loadUrl(String url) {
+        if(!url.equals("about:blank")) {
+            super.loadUrl("about:blank");
+        }
         Log.v("ahci_meme_view", "loading url: " + url);
         if (url.startsWith("http://9gag.com/")) {
-
             load9GagMeme(url);
         } else {
             super.loadUrl(url);

@@ -9,8 +9,15 @@ import com.ahci.meme_recommender.R;
 
 import de.ahci.memewebview.MemeWebView;
 
+
+/*
+ * @TODO this needs lots of work!!
+ * The decrease in loading times for 9gag probably worth it (if we can get it done).
+ *
+ *
+ */
 /**
- * Created by jonbr on 13.01.2016.
+ *
  */
 public class MemeWebViewWrapper {
 

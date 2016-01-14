@@ -35,6 +35,19 @@ import java.util.Set;
 
 public class FaceTracker extends Tracker<Face> {
 
+    private static class FloatComparator implements Comparator<Float> {
+        @Override
+        public int compare(Float lhs, Float rhs) {
+            return Float.compare(lhs, rhs);
+        }
+    }
+
+    private static FloatComparator FLOAT_COMPARATOR;
+
+    static {
+        FLOAT_COMPARATOR = new FloatComparator();
+    }
+
     public static final int NOT_SMILING = 0;
     public static final int SMILING = 1;
 
@@ -293,14 +306,17 @@ public class FaceTracker extends Tracker<Face> {
      */
     public static int classify() {
         int classification = NOT_SMILING;
+
+        if(smilingProbability.size() == 0) return classification; // @TODO return -1 instead
+
         Summary<Float> summary = new Summary<>();
 
         for(int i = 0; i < smilingProbability.size(); i++) {
             summary.add(smilingProbability.get(i));
         }
 
-        if((summary.getValueAt(new FloatComparator(), 0.7f) >= 0.3f ||
-                summary.getValueAt(new FloatComparator(), 0.95f) >= 0.8f)
+        if((summary.getValueAt(FLOAT_COMPARATOR, 0.7f) >= 0.3f ||
+                summary.getValueAt(FLOAT_COMPARATOR, 0.95f) >= 0.8f)
             && someHighValuesInSecondHalf()
                 ){
             classification = SMILING;
@@ -312,33 +328,30 @@ public class FaceTracker extends Tracker<Face> {
     private static boolean someHighValuesInSecondHalf() {
         int highValueCount = 0;
         for(int i = smilingProbability.size() / 2; i < smilingProbability.size(); i++) {
-            if(smilingProbability.get(i) >= 0.6f) highValueCount++;
+            if(smilingProbability.get(i) >= 0.3f) highValueCount++;
         }
 
         return highValueCount >= 6;
     }
 
 
-    public static float smallClassification() {
-        float averageSmilingProbability = 0f;
-        int max = 5;
-        if(max > smilingProbability.size()) max = smilingProbability.size();
+    public static float getWeightedLastSmilingProbability() {
+        if(smilingProbability.size() == 0) return 0.0f;
 
-        if(max != 0) {
-            for (int i = smilingProbability.size() - 1; i > smilingProbability.size() - max; i--) {
-                averageSmilingProbability += smilingProbability.get(i);
+        float averageSmilingProbability = 0f;
+        int maxLast = 15;
+        if(maxLast > smilingProbability.size()) maxLast = smilingProbability.size();
+
+        float totalWeight = 0;
+
+        if(maxLast != 0) {
+            for (int i = smilingProbability.size() - 1; i > smilingProbability.size() - maxLast; i--) {
+                averageSmilingProbability += smilingProbability.get(i) * (1.0f / Math.pow(i, 2));
+                totalWeight += 1.0f / Math.pow(i, 2);
             }
-            averageSmilingProbability /= max;
+            averageSmilingProbability /= totalWeight;
         }
 
         return averageSmilingProbability;
-    }
-
-    private static class FloatComparator implements Comparator<Float> {
-
-        @Override
-        public int compare(Float lhs, Float rhs) {
-            return Float.compare(lhs, rhs);
-        }
     }
 }
