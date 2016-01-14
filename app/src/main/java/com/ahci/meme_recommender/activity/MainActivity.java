@@ -17,6 +17,7 @@
 package com.ahci.meme_recommender.activity;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -33,7 +34,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.ahci.meme_recommender.R;
@@ -80,6 +84,9 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
     private RelativeLayout nextButton;
     private RelativeLayout prevButton;
     private RelativeLayout emoticonButton;
+
+    private RelativeLayout swipeAnimationView;
+    private ImageView swipeAnimationEmoticon;
 
     private MemeWebViewWrapper memeWebViewWrapper;
 
@@ -165,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
                 try {
                     String[] urls = JSONParser.getImageURLs(JSONParser.getRootObject(response).getJSONArray("images"));
                     updateWebView(urls);
-                    FaceTracker.doTrack();
 
                 } catch (JSONException je) {
                 }
@@ -324,11 +330,54 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
             @Override
             public void onClick(View v) {
                 FaceTracker.doNotTrack();
-                if(faceTracker != null) faceTracker.reset();
+                int recognizedEmotion = FaceTracker.classify();
+
+                int reaction = 0;
+                if(faceTracker != null) {
+                    faceTracker.reset();
+                }
                 loadNextMeme();
-                memeWebViewWrapper.showNext();
+
+                showEmoticonAnimation(recognizedEmotion);
             }
         });
+    }
+
+    private void showEmoticonAnimation(int recognizedEmotion) {
+        final Animation animation = AnimationUtils.loadAnimation(this, R.anim.rating_animation);
+
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation a) {
+                swipeAnimationView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation a) {
+                if (a.equals(animation)) {
+                    FaceTracker.doTrack();
+                    memeWebViewWrapper.showNext();
+                    swipeAnimationView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation a) {
+
+            }
+        });
+
+        swipeAnimationView.bringToFront();
+
+        swipeAnimationView.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;
+        swipeAnimationView.getLayoutParams().height = RelativeLayout.LayoutParams.MATCH_PARENT;
+
+        swipeAnimationEmoticon.setImageResource(
+                recognizedEmotion == FaceTracker.NOT_SMILING?
+                        R.drawable.emoticon_neutral : R.drawable.emoticon_smiling
+        );
+
+        swipeAnimationView.startAnimation(animation);
     }
 
     private void updateWebView(String... urls) {
@@ -424,6 +473,11 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         nextButton = (RelativeLayout) this.findViewById(R.id.relative_layout_next);
         prevButton = (RelativeLayout) this.findViewById(R.id.relative_layout_previous);
         emoticonButton = (RelativeLayout) this.findViewById(R.id.relative_layout_emoticon);
+
+        swipeAnimationView = (RelativeLayout) this.findViewById(R.id.emoticon_for_swipe_animation_wrapper);
+        swipeAnimationEmoticon = (ImageView) this.findViewById(R.id.emoticon_for_swipe_animation);
+
+        swipeAnimationEmoticon.setImageResource(R.drawable.emoticon_neutral);
     }
 
     private void getIdFromServer() {

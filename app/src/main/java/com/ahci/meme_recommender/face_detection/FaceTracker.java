@@ -28,11 +28,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class FaceTracker extends Tracker<Face> {
+
+    public static final int NOT_SMILING = 0;
+    public static final int SMILING = 1;
 
     private static boolean doNotTrack;
 
@@ -41,8 +45,8 @@ public class FaceTracker extends Tracker<Face> {
 
     private FaceDataRetriever mFaceDataRetriever;
     private Context context;
-    private int increment = 0;
 
+    /** those are all static because the actual face tracker may change at any time. */
     private static List<PointF> positionsLeftEyes = new ArrayList<>();
     private static List<PointF> positionsRightEyes = new ArrayList<>();
     private static List<PointF> positionsLeftMouth = new ArrayList<>();
@@ -275,5 +279,66 @@ public class FaceTracker extends Tracker<Face> {
      */
     @Override
     public void onDone() {
+    }
+
+    /**
+     *
+     * In order to select the emoticon.
+     * @return
+     * One of the constants defined in the class:
+     * <ul>
+     *     <li>NOT_SMILING</li>
+     *     <li>SMILING</li>
+     * </ul>
+     */
+    public static int classify() {
+        int classification = NOT_SMILING;
+        Summary<Float> summary = new Summary<>();
+
+        for(int i = 0; i < smilingProbability.size(); i++) {
+            summary.add(smilingProbability.get(i));
+        }
+
+        if((summary.getValueAt(new FloatComparator(), 0.7f) >= 0.3f ||
+                summary.getValueAt(new FloatComparator(), 0.95f) >= 0.8f)
+            && someHighValuesInSecondHalf()
+                ){
+            classification = SMILING;
+        }
+
+        return classification;
+    }
+
+    private static boolean someHighValuesInSecondHalf() {
+        int highValueCount = 0;
+        for(int i = smilingProbability.size() / 2; i < smilingProbability.size(); i++) {
+            if(smilingProbability.get(i) >= 0.6f) highValueCount++;
+        }
+
+        return highValueCount >= 6;
+    }
+
+
+    public static float smallClassification() {
+        float averageSmilingProbability = 0f;
+        int max = 5;
+        if(max > smilingProbability.size()) max = smilingProbability.size();
+
+        if(max != 0) {
+            for (int i = smilingProbability.size() - 1; i > smilingProbability.size() - max; i--) {
+                averageSmilingProbability += smilingProbability.get(i);
+            }
+            averageSmilingProbability /= max;
+        }
+
+        return averageSmilingProbability;
+    }
+
+    private static class FloatComparator implements Comparator<Float> {
+
+        @Override
+        public int compare(Float lhs, Float rhs) {
+            return Float.compare(lhs, rhs);
+        }
     }
 }

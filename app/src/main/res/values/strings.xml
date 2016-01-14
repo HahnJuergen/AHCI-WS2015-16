@@ -17,4 +17,6 @@
     <string name="server_offline_body">Die App kann deswegen im Moment nicht verwendet werden. Versuchen Sie es später wieder.</string>
     <string name="all_servers_offline">Probleme mit Internetverbindung</string>
     <string name="all_servers_offline_body">Ihre Internetverbindung ist aktiviert, aber es können keine Daten abgerufen werden. Versuchen Sie es später wieder.</string>
+    <string name="cant_detect_smile">Dein Gesichtsausdruck kann nicht bestimmt werden. Bitte schau gerade auf das Smartphone.</string>
+    <string name="cant_find_face">Kein Gesicht gefunden. Bitte schau gerade auf das Smartphone.</string>
 </resources>

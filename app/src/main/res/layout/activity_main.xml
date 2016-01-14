@@ -123,6 +123,18 @@
 
         </LinearLayout>
 
+        <RelativeLayout
+            android:id="@+id/emoticon_for_swipe_animation_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            android:visibility="gone">
+            <ImageView
+                android:id="@+id/emoticon_for_swipe_animation"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:layout_centerInParent="true"/>
+        </RelativeLayout>
 
     </RelativeLayout>
 

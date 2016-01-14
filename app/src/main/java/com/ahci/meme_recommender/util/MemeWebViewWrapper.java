@@ -1,6 +1,7 @@
 package com.ahci.meme_recommender.util;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -50,8 +51,8 @@ public class MemeWebViewWrapper {
     }
 
     public void showNext() {
-        webViews[currentViewIndex].loadUrl("about:blank");
-        webViews[currentViewIndex].setVisibility(View.INVISIBLE);
+//        webViews[currentViewIndex].loadUrl("about:blank");
+//        webViews[currentViewIndex].setVisibility(View.INVISIBLE);
 
         currentViewIndex++;
         if(currentViewIndex >= webViews.length) currentViewIndex = 0;
