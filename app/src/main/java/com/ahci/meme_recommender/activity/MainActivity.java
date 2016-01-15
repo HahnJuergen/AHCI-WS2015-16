@@ -16,8 +16,9 @@
 
 package com.ahci.meme_recommender.activity;
 
+import android.content.ContentValues;
 import android.content.SharedPreferences;
-import android.hardware.camera2.params.Face;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -29,9 +30,10 @@ import android.widget.RelativeLayout;
 import com.ahci.meme_recommender.R;
 import com.ahci.meme_recommender.face_detection.FaceTracker;
 import com.ahci.meme_recommender.face_detection.FaceTrackerFactory;
-import com.ahci.meme_recommender.face_detection.OnFaceUpdateListener;
 import com.ahci.meme_recommender.face_detection.user_face_watcher.FaceWatcherView;
 import com.ahci.meme_recommender.json_parser.JSONParser;
+import com.ahci.meme_recommender.model.Meme;
+import com.ahci.meme_recommender.model.MemeList;
 import com.ahci.meme_recommender.model.Rating;
 import com.ahci.meme_recommender.model.Storage;
 import com.ahci.meme_recommender.server_connection.ServerCorrespondence;
@@ -58,10 +60,14 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
 
     private int userId = -1;
     private ServerCorrespondence.ServerResponseHandler onMemeDownloadListener;
+    private ServerCorrespondence.ServerResponseHandler onFirstMemesDownloadListener;
+
     private ServerCorrespondence.ServerErrorHandler networkErrorHandler;
 
     private CameraSourceHelper cameraSourceHelper;
     private FaceWatcherView faceWatcherView;
+
+    private MemeList memeList;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -81,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
 
     private void loadFirstMemes() {
         ServerCorrespondence.getMemeImages(userId, SITES_LOADED_AT_ONCE + 1, Rating.loadRatingsToSendToServer(new Storage(this)),
-                this, onMemeDownloadListener, networkErrorHandler);
+                this, onFirstMemesDownloadListener, networkErrorHandler);
     }
 
     private void loadNextMeme() {
@@ -96,6 +102,8 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         setupMemeWebView();
         setupOnMemeDownloadListener();
         setupNetworkErrorHelper();
+
+        memeList = new MemeList();
     }
 
     private void setupControlButtons() {
@@ -106,12 +114,9 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
 
     private void setupMemeWebView() {
         memeWebViewWrapper = new MemeWebViewWrapper(this,
-                (RelativeLayout) findViewById(R.id.webview_wrapper), SITES_LOADED_AT_ONCE);
+                (RelativeLayout) findViewById(R.id.webview_wrapper));
     }
 
-    /*
-     * @TODO implement this
-     */
     /**
      * @return
      * <ul>
@@ -143,14 +148,54 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
             @Override
             public void handleResponse(String response) {
                 try {
-                    String[] urls = JSONParser.getImageURLs(JSONParser.getRootObject(response).getJSONArray("images"));
-                    updateWebView(urls);
-
+                    Meme[] memes = JSONParser.loadMemes(response);
+                    for(Meme m : memes) memeList.add(m);
                 } catch (JSONException je) {
                     je.printStackTrace();
                 }
+
+                markRatingsAsSentToServer(response);
             }
         };
+
+
+        this.onFirstMemesDownloadListener = new ServerCorrespondence.ServerResponseHandler() {
+            @Override
+            public void handleResponse(String response) {
+                try {
+                    Meme[] memes = JSONParser.loadMemes(response);
+                    for(Meme m : memes) memeList.add(m);
+                    if(memes.length > 1) {
+                        memeWebViewWrapper.loadUrlInFront(memeList.next().getUrl());
+                        memeWebViewWrapper.loadUrlInBackground(memeList.next().getUrl());
+                    }
+
+                    markRatingsAsSentToServer(response);
+                } catch (JSONException e) {
+                    Log.d("ahci_json_error", "Error in string: " + response);
+                    e.printStackTrace();
+                }
+            }
+        };
+    }
+
+    private void markRatingsAsSentToServer(String response) {
+        try {
+            int[] ratedMemeIDs = JSONParser.loadRatedMemeIDs(response);
+            Storage storage = new Storage(MainActivity.this);
+            storage.openConnection(true);
+            SQLiteDatabase db = storage.getDb();
+
+            ContentValues values = new ContentValues();
+            values.put(Rating.COLUMN_NAME_SENT_RATING_TO_SERVER, 1);
+            for(int id : ratedMemeIDs) {
+                db.update(Rating.TABLE_NAME, values, Rating.COLUMN_NAME_RATING_MEME_ID + "=" + id, null);
+            }
+
+            storage.closeConnection();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupNetworkErrorHelper() {
@@ -188,16 +233,35 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
             public void onClick(View v) {
                 FaceTracker.doNotTrack();
                 int recognizedEmotion = FaceTracker.classify();
+                storeReactionAndLoadNext(recognizedEmotion);
 
-                int reaction = 0;
                 if (faceTracker != null) {
                     faceTracker.reset();
                 }
-                loadNextMeme();
 
                 showEmoticonAnimation(recognizedEmotion);
             }
         });
+    }
+
+    private void storeReactionAndLoadNext(int recognizedEmotion) {
+        storeReaction(recognizedEmotion);
+        loadNextMeme();
+    }
+
+    private void storeReaction(int recognizedEmotion) {
+        Meme meme = memeList.getForUrl(memeWebViewWrapper.getCurrentMemeURL());
+        if(meme != null) {
+            Rating rating = new Rating();
+            rating.setRatingValue(recognizedEmotion);
+            rating.setMemeId(meme.getId());
+            rating.setSentToServer(0);
+
+            Storage storage = new Storage(this);
+            storage.openConnection(true);
+            storage.getDb().insert(Rating.TABLE_NAME, null, rating.toContentValues());
+            storage.closeConnection();
+        }
     }
 
     private void showEmoticonAnimation(int recognizedEmotion) {
@@ -205,8 +269,9 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
             @Override
             public void onAnimationFinish() {
                 FaceTracker.doTrack();
-                memeWebViewWrapper.showNext();
                 faceWatcherView.showMessagesIfNecessary();
+                memeWebViewWrapper.showBackWebView();
+                memeWebViewWrapper.loadUrlInBackground(memeList.next().getUrl());
             }
 
             @Override
@@ -216,14 +281,9 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         });
     }
 
-    private void updateWebView(String... urls) {
-        for (String url : urls) {
-            memeWebViewWrapper.loadUrl(url);
-        }
-    }
-
     /* @TODO */
     private void setupPrevMemeButton(RelativeLayout prevButton) {
+
     }
 
     /**

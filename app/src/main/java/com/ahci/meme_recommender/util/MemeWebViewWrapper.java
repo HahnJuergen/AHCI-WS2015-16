@@ -3,6 +3,7 @@ package com.ahci.meme_recommender.util;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.RelativeLayout;
 
 import com.ahci.meme_recommender.R;
@@ -13,37 +14,37 @@ import de.ahci.memewebview.MemeWebView;
 /*
  * @TODO this needs lots of work!!
  * The decrease in loading times for 9gag probably worth it (if we can get it done).
- *
- *
+ * @TODO This works better now after introducing the meme list, but I'm still not entirely happy.
+ * I don't really see any bugs, but we should disable loading new memes (in the main activity)
+ * at least until switching the views is complete or check if the background has loaded before a user can
+ * switch. (Or at least the one in the front has finished loading before a user can switch...)
  */
 /**
  *
  */
 public class MemeWebViewWrapper {
 
-    private MemeWebView[] webViews;
+    private static boolean LOG = false;
+
+    private WebView backWebView;
+    private WebView frontWebView;
     private RelativeLayout root;
 
-    private int currentViewIndex;
-    private int currentLoadIndex;
+    private String urlFront, urlBack;
 
-    public MemeWebViewWrapper(Context context, RelativeLayout root, int howManyMore) {
+    public MemeWebViewWrapper(Context context, RelativeLayout root) {
         this.root = root;
 
-        webViews = new MemeWebView[1 + howManyMore];
-        webViews[0] = (MemeWebView) root.findViewById(R.id.webview);
-        for(int i = 0; i < howManyMore; i++) {
-            webViews[i + 1] = copyBasicWebview(context, webViews[0]);
-        }
+        frontWebView = (WebView) root.findViewById(R.id.webview);
+        backWebView = copyBasicWebview(context, frontWebView);
 
         setupWebViews();
 
-        webViews[0].bringToFront();
-        currentViewIndex = 0;
-        currentLoadIndex = 0;
+        frontWebView.bringToFront();
     }
 
     private void setupWebViews() {
+        WebView[] webViews = new WebView[] {frontWebView, backWebView};
         for(int i = 0; i < webViews.length; i++) {
             webViews[i].getSettings().setUserAgentString("Mozilla/5.0 (Linux; Android 4.4; Nexus 5 Build/_BuildID_) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36\n");
             webViews[i].getSettings().setJavaScriptEnabled(true);
@@ -51,29 +52,41 @@ public class MemeWebViewWrapper {
         }
     }
 
-    public void loadUrl(String url) {
-        webViews[currentLoadIndex].loadUrl(url);
-        currentLoadIndex++;
-        if(currentLoadIndex >= webViews.length) currentLoadIndex = 0;
+    public void showBackWebView() {
+        if(LOG)Log.d("ahci_meme_web_view", "Switching web views");
+        backWebView.bringToFront();
+        WebView tmp = backWebView;
+        backWebView = frontWebView;
+        frontWebView = tmp;
+
+        String tmpUrl = urlBack;
+        urlBack = urlFront;
+        urlFront = tmpUrl;
     }
 
-    public void showNext() {
-//        webViews[currentViewIndex].loadUrl("about:blank");
-//        webViews[currentViewIndex].setVisibility(View.INVISIBLE);
-
-        currentViewIndex++;
-        if(currentViewIndex >= webViews.length) currentViewIndex = 0;
-        webViews[currentViewIndex].bringToFront();
-
-        webViews[currentViewIndex].setVisibility(View.VISIBLE);
+    public void loadUrlInBackground(String url) {
+        if(LOG) Log.d("ahci_meme_web_view", "loading in background: " + url);
+        urlBack = url;
+        backWebView.loadUrl(url);
     }
 
-    private MemeWebView copyBasicWebview(Context context, MemeWebView basic) {
-        MemeWebView copy = new MemeWebView(context);
+    public void loadUrlInFront(String url) {
+        if(LOG) Log.d("ahci_meme_web_view", "loading in front: " + url);
+        urlFront = url;
+        frontWebView.loadUrl(url);
+    }
+
+    private WebView copyBasicWebview(Context context, WebView basic) {
+        WebView copy = new MemeWebView(context);
         root.addView(copy, basic.getLayoutParams());
-        copy.setVisibility(View.INVISIBLE);
 
         return copy;
+    }
+
+    // @TODO this is part of the reason the "next meme" button must wait until this is fully loaded:
+    // might still be the previous meme otherwise
+    public String getCurrentMemeURL() {
+        return urlFront;
     }
 
 }

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class Rating implements BaseColumns {
             if(i != ratings.size() - 1) urlParam.append(",");
         }
 
-        return urlParam.length() == 0? "" : (addAmpersandBefore? "&" + urlParam.toString() : urlParam.toString());
+        return urlParam.length() == 0? "" : ((addAmpersandBefore? "&" : "") + "ratings=" + urlParam.toString());
     }
 
     public Rating() {
@@ -116,11 +117,11 @@ public class Rating implements BaseColumns {
         this.ratingValue = ratingValue;
     }
 
-    private int getSentToServer() {
+    public int getSentToServer() {
         return sentToServer;
     }
 
-    private void setSentToServer(int sentToServer) {
+    public void setSentToServer(int sentToServer) {
         this.sentToServer = sentToServer;
     }
 

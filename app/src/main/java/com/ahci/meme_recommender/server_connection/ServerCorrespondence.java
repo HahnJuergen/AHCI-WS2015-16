@@ -2,6 +2,7 @@ package com.ahci.meme_recommender.server_connection;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -45,9 +46,10 @@ public class ServerCorrespondence {
 
         context = c;
 
-        new DownloadTask(listener, SERVER + GET_MEMES + "?"
+        String url = SERVER + GET_MEMES + "?"
                 + "user_id=" + userId + "&" + "how_many=" + howMany
-                + Rating.toUrlParam(ratings, true), errorHandler).execute();
+                + Rating.toUrlParam(ratings, true);
+        new DownloadTask(listener, url, errorHandler).execute();
     }
 
     public interface ServerResponseHandler {
