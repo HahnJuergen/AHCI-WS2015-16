@@ -22,12 +22,12 @@ public class Rating implements BaseColumns {
     public static final String SQL_CREATE_RATINGS =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     _ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    COLUMN_NAME_RATING_MEME_ID + " INTEGER," +
+                    COLUMN_NAME_RATING_MEME_ID + " TEXT," +
                     COLUMN_NAME_RATING_VALUE + " INTEGER," +
                     COLUMN_NAME_SENT_RATING_TO_SERVER + " INTEGER)";
 
     private int id;
-    private int memeId;
+    private String memeId;
     private int ratingValue;
     private int sentToServer;
 
@@ -68,7 +68,7 @@ public class Rating implements BaseColumns {
             do {
                 Rating rating = new Rating();
                 rating.setId(cursor.getInt(cursor.getColumnIndex(_ID)));
-                rating.setMemeId(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_RATING_MEME_ID)));
+                rating.setMemeId(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_RATING_MEME_ID)));
                 rating.setRatingValue(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_RATING_VALUE)));
                 rating.setSentToServer(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_SENT_RATING_TO_SERVER)));
                 ratings.add(rating);
@@ -101,11 +101,11 @@ public class Rating implements BaseColumns {
         this.id = id;
     }
 
-    public int getMemeId() {
+    public String getMemeId() {
         return memeId;
     }
 
-    public void setMemeId(int memeId) {
+    public void setMemeId(String memeId) {
         this.memeId = memeId;
     }
 

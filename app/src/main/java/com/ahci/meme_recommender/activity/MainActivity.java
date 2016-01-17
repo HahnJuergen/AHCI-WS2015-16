@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
 
     private MemeWebViewWrapper memeWebViewWrapper;
 
-    private int userId = -1;
+    private String userId = "-1";
     private ServerCorrespondence.ServerResponseHandler onMemeDownloadListener;
     private ServerCorrespondence.ServerResponseHandler onFirstMemesDownloadListener;
 
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
             showTutorial();
         } else {
             setup();
-            if(userId != -1) {
+            if(!userId.equals("-1")) {
                 loadFirstMemes();
             }
         }
@@ -128,13 +128,13 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         return false;
     }
 
-    private int getId() {
+    private String getId() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if(!prefs.contains("user_id")) {
             getIdFromServer();
-            return -1;
+            return "-1";
         } else {
-            return prefs.getInt("user_id", -1);
+            return prefs.getString("user_id", "-1");
         }
     }
 
@@ -181,15 +181,15 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
 
     private void markRatingsAsSentToServer(String response) {
         try {
-            int[] ratedMemeIDs = JSONParser.loadRatedMemeIDs(response);
+            String[] ratedMemeIDs = JSONParser.loadRatedMemeIDs(response);
             Storage storage = new Storage(MainActivity.this);
             storage.openConnection(true);
             SQLiteDatabase db = storage.getDb();
 
             ContentValues values = new ContentValues();
             values.put(Rating.COLUMN_NAME_SENT_RATING_TO_SERVER, 1);
-            for(int id : ratedMemeIDs) {
-                db.update(Rating.TABLE_NAME, values, Rating.COLUMN_NAME_RATING_MEME_ID + "=" + id, null);
+            for(String id : ratedMemeIDs) {
+                db.update(Rating.TABLE_NAME, values, Rating.COLUMN_NAME_RATING_MEME_ID + "=\"" + id + "\"", null);
             }
 
             storage.closeConnection();
@@ -271,7 +271,11 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
                 FaceTracker.doTrack();
                 faceWatcherView.showMessagesIfNecessary();
                 memeWebViewWrapper.showBackWebView();
-                memeWebViewWrapper.loadUrlInBackground(memeList.next().getUrl());
+
+                Meme next = memeList.next();
+                if(next != null) {
+                    memeWebViewWrapper.loadUrlInBackground(next.getUrl());
+                }
             }
 
             @Override
@@ -329,7 +333,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
                     if (obj.getString("status").equals("ok")) {
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
                         SharedPreferences.Editor editor = prefs.edit();
-                        editor.putInt("user_id", obj.getInt("id"));
+                        editor.putString("user_id", obj.getString("id"));
                         editor.apply();
 
                         // this has not happened at this point, so the "basic usage"

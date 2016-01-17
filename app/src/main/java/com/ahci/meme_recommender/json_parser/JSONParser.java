@@ -26,22 +26,22 @@ public class JSONParser {
 
     private static Meme getMemeFromJSON(JSONObject json) throws JSONException {
         Meme meme = new Meme();
-        meme.setId(json.getInt("id"));
+        meme.setId(json.getString("id"));
         meme.setUrl(json.getString("url"));
         return meme;
     }
 
-    public static int[] loadRatedMemeIDs(String json) throws JSONException {
+    public static String[] loadRatedMemeIDs(String json) throws JSONException {
         JSONObject root = getRootObject(json);
         if(root.has("rated_meme_ids")) {
             JSONArray arr = root.getJSONArray("rated_meme_ids");
-            int[] ratedMemeIDs = new int[arr.length()];
+            String[] ratedMemeIDs = new String[arr.length()];
             for(int i = 0; i < ratedMemeIDs.length; i++) {
-                ratedMemeIDs[i] = arr.getInt(i);
+                ratedMemeIDs[i] = arr.getString(i);
             }
             return ratedMemeIDs;
         } else {
-            return new int[0];
+            return new String[0];
         }
     }
 }

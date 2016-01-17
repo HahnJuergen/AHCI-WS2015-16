@@ -7,7 +7,7 @@ import org.json.JSONTokener;
 public class Meme {
 
     private String url;
-    private int id;
+    private String id;
 
     public Meme() {
 
@@ -21,11 +21,11 @@ public class Meme {
         return url;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 }

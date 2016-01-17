@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class ServerCorrespondence {
 
-    private static final String SERVER = "http://192.168.0.165:8080";
+    private static final String SERVER = "http://192.168.178.58:8080";
     private static final String REQUEST_ID="/request_id.json";
     private static final String GET_MEMES = "/load_images.json";
 
@@ -36,7 +36,7 @@ public class ServerCorrespondence {
         new DownloadTask(listener, SERVER + REQUEST_ID, errorHandler).execute();
     }
 
-    public static void getMemeImages(int userId, int howMany, List<Rating> ratings,
+    public static void getMemeImages(String userId, int howMany, List<Rating> ratings,
                                      final Context c, final ServerResponseHandler listener,
                                      ServerErrorHandler errorHandler) {
         if(!NetworkState.getInstance(c).isOnline()) {
