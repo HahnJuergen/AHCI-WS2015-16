@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.ahci.meme_recommender.R;
+import com.ahci.meme_recommender.activity.tutorial.TutorialHelper;
 import com.ahci.meme_recommender.face_detection.FaceTracker;
 import com.ahci.meme_recommender.face_detection.FaceTrackerFactory;
 import com.ahci.meme_recommender.face_detection.user_face_watcher.FaceWatcherView;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
     private SwipeAnimationView swipeAnimationView;
 
     private MemeWebViewWrapper memeWebViewWrapper;
+
+    private TutorialHelper tutorialHelper;
 
     private String userId = "-1";
     private ServerCorrespondence.ServerResponseHandler onMemeDownloadListener;
@@ -123,9 +126,11 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
      *     <li><em>True</em> if this is the first start of the app</li>
      *     <li><em>False</em> if this is not the first start of the app</li>
      * </ul>
+     * (technically: if the user finished the tutorial, in both cases)
      */
     private boolean firstAppStart() {
-        return false;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs.getBoolean("finished_tutorial", true);
     }
 
     private String getId() {
@@ -138,9 +143,23 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         }
     }
 
-    /* @TODO implement this */
     private void showTutorial() {
-
+        tutorialHelper = new TutorialHelper(this, findViewById(R.id.tutorial_view_wrapper), new TutorialHelper.OnFinishListener() {
+            @Override
+            public void onTutorialFinish() {
+                tutorialHelper.hide();
+                setup();
+                if(!userId.equals("-1")) {
+                    loadFirstMemes();
+                }
+                cameraSourceHelper.startCameraSource();
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("finished_tutorial", false);
+                editor.apply();
+            }
+        });
+        tutorialHelper.showTutorial(getSupportFragmentManager(), getWindowManager());
     }
 
     private void setupOnMemeDownloadListener() {
@@ -205,8 +224,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
     @Override
     protected void onResume() {
         super.onResume();
-
-        cameraSourceHelper.startCameraSource();
+        if(cameraSourceHelper != null) cameraSourceHelper.startCameraSource();
         FaceWatcherView.RUN_TIMER = true;
         EmoticonIconView.RUN_TIMER = true;
     }
@@ -214,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
     @Override
     protected void onPause() {
         super.onPause();
-        cameraSourceHelper.stopMPreview();
+        if(cameraSourceHelper != null) cameraSourceHelper.stopMPreview();
         FaceWatcherView.RUN_TIMER = false;
         EmoticonIconView.RUN_TIMER = false;
     }
@@ -224,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         FaceWatcherView.KILL_TIMER = true;
         EmoticonIconView.KILL_TIMER = true;
         super.onDestroy();
-        cameraSourceHelper.release();
+        if(cameraSourceHelper != null) cameraSourceHelper.release();
     }
 
     public void setupNextMemeButton(RelativeLayout nextMemeButton) {
