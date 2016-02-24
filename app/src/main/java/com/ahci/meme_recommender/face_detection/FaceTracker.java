@@ -315,7 +315,7 @@ public class FaceTracker extends Tracker<Face> {
             summary.add(smilingProbability.get(i));
         }
 
-        if((summary.getValueAt(FLOAT_COMPARATOR, 0.7f) >= 0.3f ||
+        if((summary.getValueAt(FLOAT_COMPARATOR, 0.7f) >= 0.4f ||
                 summary.getValueAt(FLOAT_COMPARATOR, 0.95f) >= 0.8f)
             && someHighValuesInSecondHalf()
                 ){
