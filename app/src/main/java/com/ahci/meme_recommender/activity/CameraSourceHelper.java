@@ -25,6 +25,11 @@ import com.google.android.gms.vision.face.FaceDetector;
 
 import java.io.IOException;
 
+/**
+ * Decomposition class/singleton, only used in MainActivity.<br/>
+ * The CameraSourceHelper handles everything concerning the camera,
+ * from requesting the permission to activating and closing the video capture.
+ */
 public class CameraSourceHelper {
 
     public static final int RC_HANDLE_GMS = 9001;
@@ -60,6 +65,9 @@ public class CameraSourceHelper {
         }
     }
 
+    /**
+     * Tries to start the camera preview, shows an error dialog if the required google play services are unavailable.
+     */
     public void startCameraSource() {
         // check that the device has play services available.
         int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
@@ -81,18 +89,18 @@ public class CameraSourceHelper {
         }
     }
 
+    /**
+     * If the app does not have the camera permission, this method requests it.
+     */
     private void requestCameraPermission() {
         Log.w(TAG, "Camera permission is not granted. Requesting permission");
-
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
-
         if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.CAMERA)) {
             ActivityCompat.requestPermissions(activity, permissions, RC_HANDLE_CAMERA_PERM);
             return;
         }
 
         final Activity thisActivity = activity;
-
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -100,13 +108,20 @@ public class CameraSourceHelper {
                         RC_HANDLE_CAMERA_PERM);
             }
         };
-
         Snackbar.make(mOverlay, R.string.permission_camera_rationale,
                 Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.ok, listener)
                 .show();
     }
 
+    /**
+     * Creates a new camera source:
+     * <ul>
+     *     <li>640 * 480 px</li>
+     *     <li>Front camera</li>
+     *     <li>30 fps</li>
+     * </ul>
+     */
     private void createCameraSource() {
         Context context = activity.getApplicationContext();
         FaceDetector detector = new FaceDetector.Builder(context)
@@ -132,6 +147,9 @@ public class CameraSourceHelper {
         FaceWatcherView.CAMERA_WIDTH = 480;
     }
 
+    /**
+     * Stops the camera preview.
+     */
     public void stopMPreview() {
         mPreview.stop();
     }
@@ -141,12 +159,20 @@ public class CameraSourceHelper {
         mOverlay = (Overlay) activity.findViewById(R.id.faceOverlay);
     }
 
+    /**
+     * Releases the camera source
+     */
     public void release() {
         if(mCameraSource != null) {
             mCameraSource.release();
         }
     }
 
+    /**
+     * If the permissions were granted: creates the camera source
+     * Otherwise: calls "finish"
+     * @param grantResults array containing (hopefully) PackageManager.PERMISSION_GRANTED at index 0
+     */
     public void onRequestPermissionResult(int[] grantResults) {
 
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

@@ -9,7 +9,8 @@ import com.ahci.meme_recommender.R;
 import com.ahci.meme_recommender.server_connection.ServerCorrespondence;
 
 /**
- * Created by jonbr on 14.01.2016.
+ * Handles all server connection errors (by displaying various dialogs and offering solutions to
+ * resolve the errors or explanations for the errors to the user).
  */
 public class NetworkErrorHelper implements ServerCorrespondence.ServerErrorHandler {
 
@@ -21,8 +22,6 @@ public class NetworkErrorHelper implements ServerCorrespondence.ServerErrorHandl
 
 
     /**
-     * @TODO Possibly move this (and the other ServerCorr. interface methods to a separate own file
-     *
      * Displays a dialog that allows the user to open the network connectivity settings or
      * close the app.
      */
@@ -48,6 +47,10 @@ public class NetworkErrorHelper implements ServerCorrespondence.ServerErrorHandl
         dialogBuilder.create().show();
     }
 
+
+    /**
+     * Displays a dialog that informs the user about the error and allows them to close the app.
+     */
     @Override
     public void onNoConnectionToServerPossible() {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
@@ -64,6 +67,9 @@ public class NetworkErrorHelper implements ServerCorrespondence.ServerErrorHandl
         dialogBuilder.create().show();
     }
 
+    /**
+     * Displays a dialog that informs the user about the error and allows them to close the app.
+     */
     @Override
     public void onNoConnectionAtAllPossible() {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);

@@ -147,4 +147,34 @@
 
     </com.ahci.meme_recommender.face_detection.user_face_watcher.FaceWatcherView>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:id="@+id/tutorial_view_wrapper"
+        android:background="@color/light_gray">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/tutorial_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="@color/white"
+            android:layout_above="@+id/tutorial_controls"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="40dp"
+            android:id="@+id/tutorial_controls"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:gravity="center">
+
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
 </RelativeLayout>

@@ -4,14 +4,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
 
+/**
+ * Model class for the Memes. Memes consist of an URL and an unique ID.
+ */
 public class Meme {
 
     private String url;
     private String id;
-
-    public Meme() {
-
-    }
 
     public void setUrl(String url) {
         this.url = url;

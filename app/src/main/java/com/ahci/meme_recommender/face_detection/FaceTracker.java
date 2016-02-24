@@ -346,8 +346,8 @@ public class FaceTracker extends Tracker<Face> {
 
         if(maxLast != 0) {
             for (int i = smilingProbability.size() - 1; i > smilingProbability.size() - maxLast; i--) {
-                averageSmilingProbability += smilingProbability.get(i) * (1.0f / Math.pow(i, 2));
-                totalWeight += 1.0f / Math.pow(i, 2);
+                averageSmilingProbability += smilingProbability.get(i) * (1.0f / Math.pow(i, 4));
+                totalWeight += 1.0f / Math.pow(i, 4);
             }
             averageSmilingProbability /= totalWeight;
         }

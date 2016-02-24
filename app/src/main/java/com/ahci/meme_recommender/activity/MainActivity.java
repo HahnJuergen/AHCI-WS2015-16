@@ -336,6 +336,8 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
                         editor.putString("user_id", obj.getString("id"));
                         editor.apply();
 
+                        userId = obj.getString("id");
+
                         // this has not happened at this point, so the "basic usage"
                         // is started now!
                         loadFirstMemes();

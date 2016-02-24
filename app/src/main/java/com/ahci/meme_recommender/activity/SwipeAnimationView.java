@@ -28,16 +28,13 @@ public class SwipeAnimationView {
     }
 
     public void showAnimation(int whichEmoticon, AnimationStateListener listener) {
-
         final Animation animation = setupAnimation(listener);
 
         root.bringToFront();
-
         root.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;
         root.getLayoutParams().height = RelativeLayout.LayoutParams.MATCH_PARENT;
 
         selectImage(whichEmoticon);
-
         root.startAnimation(animation);
     }
 
