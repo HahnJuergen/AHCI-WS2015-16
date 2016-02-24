@@ -71,12 +71,14 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
     private FaceWatcherView faceWatcherView;
 
     private MemeList memeList;
+    private int memeListIndex;
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.activity_main);
         userId = getId();
+        memeListIndex = 0;
 
         if(firstAppStart()) {
             showTutorial();
@@ -185,8 +187,8 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
                     Meme[] memes = JSONParser.loadMemes(response);
                     for(Meme m : memes) memeList.add(m);
                     if(memes.length > 1) {
-                        memeWebViewWrapper.loadUrlInFront(memeList.next().getUrl());
-                        memeWebViewWrapper.loadUrlInBackground(memeList.next().getUrl());
+                        memeWebViewWrapper.loadUrlInFront(memeList.getAtIndex(memeListIndex).getUrl());
+                        memeWebViewWrapper.loadUrlInBackground(memeList.getAtIndex(memeListIndex + 1).getUrl());
                     }
 
                     markRatingsAsSentToServer(response);
@@ -290,9 +292,12 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
                 faceWatcherView.showMessagesIfNecessary();
                 memeWebViewWrapper.showBackWebView();
 
-                Meme next = memeList.next();
-                if(next != null) {
-                    memeWebViewWrapper.loadUrlInBackground(next.getUrl());
+                if(memeListIndex < memeList.getList().size()) {
+                    memeListIndex++;
+                    Meme next = memeList.getAtIndex(memeListIndex + 1);
+                    if (next != null) {
+                        memeWebViewWrapper.loadUrlInBackground(next.getUrl());
+                    }
                 }
             }
 
@@ -305,7 +310,16 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
 
     /* @TODO */
     private void setupPrevMemeButton(RelativeLayout prevButton) {
+        prevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (memeListIndex <= 0) return;
 
+                memeListIndex--;
+                memeWebViewWrapper.showBackWebView();
+                memeWebViewWrapper.loadUrlInFront(memeList.getAtIndex(memeListIndex).getUrl());
+            }
+        });
     }
 
     /**

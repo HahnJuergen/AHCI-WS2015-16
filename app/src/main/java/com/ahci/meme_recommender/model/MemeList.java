@@ -12,11 +12,8 @@ public class MemeList {
 
     private List<Meme> memes;
 
-    private int currentlyOnDisplayIndex;
-
     public MemeList() {
         memes = new ArrayList<>();
-        currentlyOnDisplayIndex = -1;
     }
 
     public void add(Meme meme) {
@@ -34,22 +31,8 @@ public class MemeList {
         return null;
     }
 
-    public Meme next() {
-        if(currentlyOnDisplayIndex < memes.size() - 1) {
-            currentlyOnDisplayIndex++;
-            return memes.get(currentlyOnDisplayIndex);
-        } else {
-            return null;
-        }
-    }
-
-    public Meme previous() {
-        if(currentlyOnDisplayIndex > 0) {
-            currentlyOnDisplayIndex--;
-            return memes.get(currentlyOnDisplayIndex);
-        } else {
-            return null;
-        }
+    public Meme getAtIndex(int index) {
+        return memes.get(index);
     }
 
     public List<Meme> getList() {
