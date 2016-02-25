@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
 
     private TutorialHelper tutorialHelper;
 
-    private String userId = "-1";
+    private String userId;
     private ServerCorrespondence.ServerResponseHandler onMemeDownloadListener;
     private ServerCorrespondence.ServerResponseHandler onFirstMemesDownloadListener;
 
@@ -77,12 +77,14 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.activity_main);
-        userId = getId();
+        // needs to happen before setup!!
+        setupNetworkErrorHelper();
         memeListIndex = 0;
 
         if(firstAppStart()) {
             showTutorial();
         } else {
+            userId = getId();
             setup();
             if(!userId.equals("-1")) {
                 loadFirstMemes();
@@ -106,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         cameraSourceHelper.checkCamera();
         setupMemeWebView();
         setupOnMemeDownloadListener();
-        setupNetworkErrorHelper();
 
         memeList = new MemeList();
     }
@@ -149,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         tutorialHelper = new TutorialHelper(this, findViewById(R.id.tutorial_view_wrapper), new TutorialHelper.OnFinishListener() {
             @Override
             public void onTutorialFinish() {
+                userId = getId();
                 tutorialHelper.hide();
                 setup();
                 if(!userId.equals("-1")) {

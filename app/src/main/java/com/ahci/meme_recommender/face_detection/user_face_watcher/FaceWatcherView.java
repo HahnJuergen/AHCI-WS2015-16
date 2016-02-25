@@ -38,6 +38,7 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
     public static boolean KILL_TIMER = false;
 
     private static long timeLastFaceRetreived;
+    private static long timeLastErrorMessageChangeOccured;
 
     public static int CAMERA_WIDTH;
     public static int CAMERA_HEIGHT;
@@ -50,7 +51,6 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
 
     private Handler correctionViewHandler;
 
-    private boolean cantFindFaceOrSmile;
     private String errorViewMessage;
 
     private boolean hideIfNecessary;
@@ -135,7 +135,8 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
     }
 
     private void setup() {
-        cantFindFaceOrSmile = true;
+        timeLastErrorMessageChangeOccured = System.currentTimeMillis() - 5000;
+
         hideIfNecessary = false;
 
         errorViewMessage = "";
@@ -196,26 +197,24 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
     }
 
     private void hideErrorMessage() {
+        if(System.currentTimeMillis() < timeLastErrorMessageChangeOccured + 500) return;
         correctionView.setVisibility(View.GONE);
-        cantFindFaceOrSmile = true;
+        timeLastErrorMessageChangeOccured = System.currentTimeMillis();
     }
 
     private void showErrorMessage(String newMessage) {
+        if(System.currentTimeMillis() < timeLastErrorMessageChangeOccured + 500) return;
         if(!hideIfNecessary) {
             correctionView.setVisibility(View.VISIBLE);
+            timeLastErrorMessageChangeOccured = System.currentTimeMillis();
         }
 
-        cantFindFaceOrSmile = false;
         if(!newMessage.equals(errorViewMessage)) {
             correctionView.setText(newMessage);
+            timeLastErrorMessageChangeOccured = System.currentTimeMillis();
         }
         errorViewMessage = newMessage;
     }
-
-    public boolean cantFindFaceOrSmile() {
-        return cantFindFaceOrSmile;
-    }
-
 
     /*
     From: https://developers.google.com/vision/face-detection-concepts
@@ -231,20 +230,6 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
         return timeLastFaceRetreived;
     }
 
-    private class Correction {
-        private boolean hasCorrection = false;
-        /**
-         * Possible values:
-         * <ul>
-         *     <li>-1 = turn to right</li>
-         *     <li>0 = don't turn face</li>
-         *     <li>1 = turn to left</li>
-         * </ul>
-         */
-        private int fixRotation = 0;
-        private int fixXPos = 0;
-        private int fixYPos = 0;
-    }
 
     private static class Log {
 

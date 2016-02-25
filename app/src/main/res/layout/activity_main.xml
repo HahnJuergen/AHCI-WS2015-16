@@ -159,8 +159,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            android:background="@color/white"
-            android:layout_above="@+id/tutorial_controls"/>
+            android:background="@color/white"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -169,7 +168,8 @@
             android:id="@+id/tutorial_controls"
             android:orientation="horizontal"
             android:layout_alignParentBottom="true"
-            android:gravity="center">
+            android:gravity="center"
+            android:background="#00000000">
 
 
 

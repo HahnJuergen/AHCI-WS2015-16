@@ -8,24 +8,23 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.ahci.meme_recommender.R;
-import com.ahci.meme_recommender.activity.MainActivity;
 import com.ahci.meme_recommender.face_detection.user_face_watcher.FaceWatcherView;
 
 public class TutorialHelper {
 
     public static final TutorialPage[] PAGES = {
-            new TutorialPage("Viele Memes", "Wir haben Memes von den größten Meme-Seiten, z.B. 9gag und Memebase!", R.drawable.emoticon_smiling_big, 0xff1abc9c),
-            new TutorialPage("Bitte Lächeln :)", "Lächle in die Frontkamera, um zu zeigen, dass dir ein Bild gefällt!", R.drawable.emoticon_smiling_big, 0xffe67e22),
-            new TutorialPage("Keine Videoaufnahme", "Du wirst nicht gefilmt! Es wird kein Video von dir gespeichert.", R.drawable.emoticon_smiling_big, 0xFF9b59b6),
-            new TutorialPage("Intelligente Vorschläge", "Wir merken uns, was dir gefällt, und zeigen dir mehr solche Bilder an!", R.drawable.emoticon_smiling_big, 0xFFf39c12),
-            new TutorialPage("Korrekturen & Hilfe", "Klicke auf den Emoticon unten in der Mitte, um falsch erkannte Gesichtsausdrücke zu korrigieren. Oben rechts befindet sich eine Hilfefunktion.", R.drawable.emoticon_smiling_big, 0xFF3498db),
-            new TutorialPage("Los geht's!", "Starten", R.drawable.emoticon_smiling_big, 0xFF2ecc71)
+            new TutorialPage("Viele Memes", "Wir haben Memes von den größten Meme-Seiten, z.B. 9gag und Memebase!", R.drawable.tutorial_1, 0xff1abc9c),
+            new TutorialPage("Bitte lächeln :)", "Lächle in die Frontkamera, um zu zeigen, dass dir ein Bild gefällt!", R.drawable.tutorial_2, 0xffe67e22),
+            new TutorialPage("Intelligente Vorschläge", "Wir merken uns, was dir gefällt, und zeigen dir mehr solche Bilder an!", R.drawable.tutorial_3, 0xFF9b59b6),
+            new TutorialPage("Völlig anonym & sicher", "Es wird kein Video von dir gespeichert! Deine Daten werden absolut vertraulich behandelt.", R.drawable.tutorial_4, 0xFFf39c12),
+            new TutorialPage("Korrekturen & Hilfe", "Klicke auf den Emoticon unten in der Mitte, um falsch erkannte Gesichtsausdrücke zu korrigieren. Oben rechts befindet sich eine Hilfefunktion.", R.drawable.tutorial_5, 0xFF3498db),
+            new TutorialPage("Los geht's!", "Starten", R.drawable.tutorial_6, 0xFF2ecc71)
     };
     public static final int CONTROL_CIRCLE_COLOR_INACTIVE = 0xffcccccc;
     public static final int CONTROL_CIRCLE_COLOR_ACTIVE = 0xffffffff;
@@ -73,14 +72,11 @@ public class TutorialHelper {
                     controlCircles[i].setTextColor(CONTROL_CIRCLE_COLOR_INACTIVE);
                 }
                 controlCircles[position].setTextColor(CONTROL_CIRCLE_COLOR_ACTIVE);
-                controlsView.setBackgroundColor(PAGES[position].getColor());
             }
         });
     }
 
     private void initControlCircles(WindowManager wm, PagerAdapter adapter) {
-        controlsView.setBackgroundColor(PAGES[0].getColor());
-
         controlCircles = new TextView[adapter.getCount()];
         int itemSize = getItemSize(wm, adapter);
 
@@ -106,7 +102,25 @@ public class TutorialHelper {
     }
 
     public void hide() {
-        rootView.setVisibility(View.GONE);
+        AlphaAnimation anim = new AlphaAnimation(1.0f, 0.0f);
+        anim.setDuration(1000);
+        anim.setRepeatCount(0);
+        anim.setRepeatMode(Animation.REVERSE);
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                rootView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        rootView.startAnimation(anim);
     }
 
     public interface OnFinishListener {

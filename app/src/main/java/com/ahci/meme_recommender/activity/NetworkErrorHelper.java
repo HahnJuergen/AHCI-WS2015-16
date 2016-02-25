@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.provider.Settings;
 
 import com.ahci.meme_recommender.R;
 import com.ahci.meme_recommender.server_connection.ServerCorrespondence;
@@ -34,7 +35,7 @@ public class NetworkErrorHelper implements ServerCorrespondence.ServerErrorHandl
                 .setPositiveButton(R.string.open_network, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        activity.startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+                        activity.startActivity(new Intent(Settings.ACTION_SETTINGS));
                     }
                 })
                 .setNegativeButton(R.string.close_app, new DialogInterface.OnClickListener() {
