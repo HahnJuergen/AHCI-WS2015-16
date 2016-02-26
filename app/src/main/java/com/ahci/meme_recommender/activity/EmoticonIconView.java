@@ -7,11 +7,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.ahci.meme_recommender.R;
+import com.ahci.meme_recommender.activity.correct_ratings.RatingsHistoryDialog;
+import com.ahci.meme_recommender.activity.correct_ratings.RatingsHistoryListAdapter;
 import com.ahci.meme_recommender.face_detection.FaceTracker;
+import com.ahci.meme_recommender.model.MemeList;
 
 public class EmoticonIconView {
 
@@ -24,7 +28,7 @@ public class EmoticonIconView {
 
     private Handler updateHandler;
 
-    public EmoticonIconView(RelativeLayout root, Context context) {
+    public EmoticonIconView(RelativeLayout root, final Context context, final MemeList memeList) {
         this.root = root;
         this.context = context;
 
@@ -42,6 +46,12 @@ public class EmoticonIconView {
             }
         };
 
+        emoticon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new RatingsHistoryDialog(context, memeList).show();
+            }
+        });
     }
 
     public void startUpdates() {

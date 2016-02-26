@@ -19,4 +19,8 @@
     <string name="all_servers_offline_body">Ihre Internetverbindung ist aktiviert, aber es können keine Daten abgerufen werden. Versuchen Sie es später wieder.</string>
     <string name="cant_detect_smile">Dein Gesichtsausdruck kann nicht bestimmt werden. Bitte schau gerade auf das Smartphone.</string>
     <string name="cant_find_face">Kein Gesicht gefunden. Bitte schau gerade auf das Smartphone.</string>
+    <string name="ratings_history_title_no_longer_available">Bewertung aus früherer Session</string>
+    <string name="no_ratings_in_current_session">In der aktuellen Session wurden noch keine Bewertungen vorgenommen!</string>
+    <string name="session_ratings">Letzte Bewertungen</string>
+    <string name="close_history_dialog">Schließen</string>
 </resources>

@@ -103,13 +103,14 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
     }
 
     private void setup() {
+        memeList = new MemeList();
+
         referenceViews();
         setupControlButtons();
         cameraSourceHelper.checkCamera();
         setupMemeWebView();
         setupOnMemeDownloadListener();
 
-        memeList = new MemeList();
     }
 
     private void setupControlButtons() {
@@ -347,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         nextButton = (RelativeLayout) this.findViewById(R.id.relative_layout_next);
         prevButton = (RelativeLayout) this.findViewById(R.id.relative_layout_previous);
 
-        emoticonIconView = new EmoticonIconView((RelativeLayout) this.findViewById(R.id.relative_layout_emoticon), this);
+        emoticonIconView = new EmoticonIconView((RelativeLayout) this.findViewById(R.id.relative_layout_emoticon), this, memeList);
         emoticonIconView.startUpdates();
 
         faceWatcherView = (FaceWatcherView) findViewById(R.id.face_watcher_view);

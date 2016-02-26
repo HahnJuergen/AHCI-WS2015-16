@@ -47,6 +47,7 @@ public class JSONParser {
         Meme meme = new Meme();
         meme.setId(json.getString("id"));
         meme.setUrl(json.getString("url"));
+        meme.setTitle(json.getString("title"));
         return meme;
     }
 

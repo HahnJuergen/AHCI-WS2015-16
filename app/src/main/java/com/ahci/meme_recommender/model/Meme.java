@@ -11,6 +11,7 @@ public class Meme {
 
     private String url;
     private String id;
+    private String title;
 
     public void setUrl(String url) {
         this.url = url;
@@ -26,5 +27,13 @@ public class Meme {
 
     public String getId() {
         return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

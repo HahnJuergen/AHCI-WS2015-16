@@ -50,7 +50,7 @@ public class Rating implements BaseColumns {
             db = storage.getDb();
         }
 
-        loadRatingsFromDB(ratings, db);
+        loadRatingsFromDBWithCondition(ratings, db, COLUMN_NAME_SENT_RATING_TO_SERVER + "=0");
 
         if(!dbWasOpen) {
             db.close();
@@ -59,23 +59,59 @@ public class Rating implements BaseColumns {
         return ratings;
     }
 
-    private static void loadRatingsFromDB(List<Rating> ratings, SQLiteDatabase db) {
+    public static List<Rating> loadLastNRatings(Storage storage, int n) {
+        List<Rating> ratings = new ArrayList<>();
+
+        boolean dbWasOpen = true;
+        SQLiteDatabase db = storage.getDb();
+        if(db == null || !db.isOpen()) {
+            dbWasOpen = false;
+            storage.openConnection(false);
+            db = storage.getDb();
+        }
+
         Cursor cursor = db.query(TABLE_NAME, new String[]{_ID, COLUMN_NAME_RATING_MEME_ID,
                         COLUMN_NAME_RATING_VALUE, COLUMN_NAME_SENT_RATING_TO_SERVER},
-                COLUMN_NAME_SENT_RATING_TO_SERVER+"=0", null, null, null, null);
+                null, null, null, null, _ID + " DESC");
 
+        int count = 0;
         if(cursor.moveToFirst()) {
             do {
-                Rating rating = new Rating();
-                rating.setId(cursor.getInt(cursor.getColumnIndex(_ID)));
-                rating.setMemeId(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_RATING_MEME_ID)));
-                rating.setRatingValue(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_RATING_VALUE)));
-                rating.setSentToServer(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_SENT_RATING_TO_SERVER)));
-                ratings.add(rating);
+                count++;
+                if(count > n) break;
+                createRatingFromCursor(ratings, cursor);
             } while(cursor.moveToNext());
         }
 
         cursor.close();
+        if(!dbWasOpen) {
+            db.close();
+        }
+
+        return ratings;
+    }
+
+    private static void loadRatingsFromDBWithCondition(List<Rating> ratings, SQLiteDatabase db, String condition) {
+        Cursor cursor = db.query(TABLE_NAME, new String[]{_ID, COLUMN_NAME_RATING_MEME_ID,
+                        COLUMN_NAME_RATING_VALUE, COLUMN_NAME_SENT_RATING_TO_SERVER},
+                condition, null, null, null, null);
+
+        if(cursor.moveToFirst()) {
+            do {
+                createRatingFromCursor(ratings, cursor);
+            } while(cursor.moveToNext());
+        }
+
+        cursor.close();
+    }
+
+    private static void createRatingFromCursor(List<Rating> ratings, Cursor cursor) {
+        Rating rating = new Rating();
+        rating.setId(cursor.getInt(cursor.getColumnIndex(_ID)));
+        rating.setMemeId(cursor.getString(cursor.getColumnIndex(COLUMN_NAME_RATING_MEME_ID)));
+        rating.setRatingValue(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_RATING_VALUE)));
+        rating.setSentToServer(cursor.getInt(cursor.getColumnIndex(COLUMN_NAME_SENT_RATING_TO_SERVER)));
+        ratings.add(rating);
     }
 
     public static String toUrlParam(List<Rating> ratings, boolean addAmpersandBefore) {
@@ -139,6 +175,15 @@ public class Rating implements BaseColumns {
         if(!wasOpen) {
             db.close();
         }
+    }
+
+    public Meme loadMeme(MemeList memeList) {
+        for(Meme meme : memeList.getList()) {
+            if(meme.getId().equals(memeId)) {
+                return meme;
+            }
+        }
+        return null;
     }
 
     public ContentValues toContentValues() {
