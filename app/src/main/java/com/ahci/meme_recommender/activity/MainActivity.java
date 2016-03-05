@@ -17,6 +17,7 @@
 package com.ahci.meme_recommender.activity;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -24,10 +25,14 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.ahci.meme_recommender.R;
+import com.ahci.meme_recommender.activity.help.HelpDialogHelper;
 import com.ahci.meme_recommender.activity.tutorial.TutorialHelper;
 import com.ahci.meme_recommender.face_detection.FaceTracker;
 import com.ahci.meme_recommender.face_detection.FaceTrackerFactory;
@@ -250,6 +255,32 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         if(cameraSourceHelper != null) cameraSourceHelper.release();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        new MenuInflater(this).inflate(R.menu.menu_main, menu);
+        menu.findItem(R.id.action_explain).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return true;
+            }
+        });
+
+        menu.findItem(R.id.action_help).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                new HelpDialogHelper().showHelpDialog(MainActivity.this, new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        if(faceTracker != null) faceTracker.reset();
+                    }
+                });
+                return true;
+            }
+        });
+
+        return true;
+    }
+
     public void setupNextMemeButton(RelativeLayout nextMemeButton) {
         nextMemeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -321,6 +352,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
                 memeListIndex--;
                 memeWebViewWrapper.showBackWebView();
                 memeWebViewWrapper.loadUrlInFront(memeList.getAtIndex(memeListIndex).getUrl());
+                faceTracker.reset();
             }
         });
     }

@@ -23,4 +23,16 @@
     <string name="no_ratings_in_current_session">In der aktuellen Session wurden noch keine Bewertungen vorgenommen!</string>
     <string name="session_ratings">Letzte Bewertungen</string>
     <string name="close_history_dialog">Schließen</string>
+    <string name="history_explanation">Tippe auf einen Eintrag in der Liste, um eine falsche Bewertung zu korrigieren. Tippe auf einen der Emoticons, um die Bewertung für den ausgewählten Eintrag zu ändern.</string>
+    <string name="menu_help">Hilfe</string>
+    <string name="menu_explain_suggestion">Vorschlag erklären</string>
+    <string name="help_dialog_title">Hilfethemen</string>
+    <string name="help_dialog_film_explain">Es werden keine Bilder oder Videos von Dir gespeichert. Damit die App feststellen kann, ob du lächelst, wirst du aber gefilmt.</string>
+    <string name="help_dialog_film_topic">Werde ich gefilmt?</string>
+    <string name="help_dialog_recognition_problems_topic">Gesichtserkennungsprobleme</string>
+    <string name="help_dialog_recognition_problems_explain">Schau möglichst gerade in die Frontkamera. Stelle sicher, dass dein Gesicht ausreichend beleuchtet ist.</string>
+    <string name="help_dialog_server_problems_topic">Serverprobleme</string>
+    <string name="help_dialog_server_problems_explain">Der Server ist momentan nur ab und zu für Testzwecke verfügbar.</string>
+    <string name="help_dialog_correct_explain">Klicke auf den Emoticon unten in der Mitte des Bildschirms, um deine letzten Bewertungen anzusehen und zu korrigieren.</string>
+    <string name="help_dialog_correct_topic">Bewertungen korrigieren</string>
 </resources>

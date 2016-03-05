@@ -177,6 +177,22 @@ public class Rating implements BaseColumns {
         }
     }
 
+    public void update(Storage storage) {
+        SQLiteDatabase db = storage.getDb();
+        boolean wasOpen = true;
+        if(db == null || !db.isOpen()) {
+            wasOpen = false;
+            storage.openConnection(true);
+            db = storage.getDb();
+        }
+
+        db.update(TABLE_NAME, toContentValues(), _ID + "=" + id, null);
+
+        if(!wasOpen) {
+            db.close();
+        }
+    }
+
     public Meme loadMeme(MemeList memeList) {
         for(Meme meme : memeList.getList()) {
             if(meme.getId().equals(memeId)) {
