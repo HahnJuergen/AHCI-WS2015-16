@@ -23,7 +23,7 @@ public class TutorialHelper {
             new TutorialPage("Bitte lächeln :)", "Lächle in die Frontkamera, um zu zeigen, dass dir ein Bild gefällt!", R.drawable.tutorial_2, 0xffe67e22),
             new TutorialPage("Intelligente Vorschläge", "Wir merken uns, was dir gefällt, und zeigen dir mehr solche Bilder an!", R.drawable.tutorial_3, 0xFF9b59b6),
             new TutorialPage("Völlig anonym & sicher", "Es wird kein Video von dir gespeichert! Deine Daten werden absolut vertraulich behandelt.", R.drawable.tutorial_4, 0xFFf39c12),
-            new TutorialPage("Korrekturen & Hilfe", "Klicke auf den Emoticon unten in der Mitte, um falsch erkannte Gesichtsausdrücke zu korrigieren. Oben rechts befindet sich eine Hilfefunktion.", R.drawable.tutorial_5, 0xFF3498db),
+            new TutorialPage("Korrekturen", "Klicke auf den Emoticon unten in der Mitte, um falsch erkannte Gesichtsausdrücke zu korrigieren.", R.drawable.tutorial_5, 0xFF3498db),
             new TutorialPage("Los geht's!", "Starten", R.drawable.tutorial_6, 0xFF2ecc71)
     };
     public static final int CONTROL_CIRCLE_COLOR_INACTIVE = 0xffcccccc;

@@ -30,6 +30,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.ahci.meme_recommender.R;
 import com.ahci.meme_recommender.activity.help.HelpDialogHelper;
@@ -165,6 +166,9 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
                 cameraSourceHelper.startCameraSource();
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
                 SharedPreferences.Editor editor = prefs.edit();
+
+                invalidateOptionsMenu();
+
                 editor.putBoolean("finished_tutorial", false);
                 editor.apply();
             }
@@ -257,10 +261,13 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if(firstAppStart()) return true;
+
         new MenuInflater(this).inflate(R.menu.menu_main, menu);
         menu.findItem(R.id.action_explain).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(MainActivity.this, "Du hast noch nicht viele Memes gesehen, also werden zufällige Bilder angezeigt.", Toast.LENGTH_LONG).show();
                 return true;
             }
         });
