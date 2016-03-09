@@ -13,9 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 
-/**
- * Created by jonbr on 07.11.2015.
- */
 public class WebChromeClientWithAlert extends WebChromeClient {
 
     private Context context;

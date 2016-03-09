@@ -12,15 +12,12 @@ import android.webkit.WebViewClient;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 
 /**
  * MemeView: loads URLs from some sites differently.
@@ -30,7 +27,8 @@ public class MemeWebView extends WebView {
     private static final int MEME_LOADED_SUCCESSFULLY = 0;
     private static final int MEME_NOT_LOADED = 1;
 
-    private Handler onMemeDownloadedHandler;
+    private Handler on9gagMemeDownloadListener;
+    private Handler onHugelolMemeDownloadListener;
 
     public MemeWebView(Context context) {
         super(context);
@@ -59,7 +57,7 @@ public class MemeWebView extends WebView {
     }
 
     private void setupHandler() {
-        onMemeDownloadedHandler = new Handler() {
+        on9gagMemeDownloadListener = new Handler() {
             @Override
             @SuppressLint("HandlerLeak")
             public void handleMessage(Message msg) {
@@ -75,7 +73,32 @@ public class MemeWebView extends WebView {
                 }
             }
         };
+        onHugelolMemeDownloadListener = new Handler() {
+            @Override
+            @SuppressLint("HandlerLeak")
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case MEME_LOADED_SUCCESSFULLY:
+                        showHugelolSite(Jsoup.parse(msg.getData().getString("html")));
+                        break;
+                    case MEME_NOT_LOADED:
+                        showError();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
     }
+
+    private void showHugelolSite(Document doc) {
+        Log.v("ahci_meme_view", "showing hugelol site");
+
+        fixHugelolSiteForDisplay(doc);
+
+        loadDataWithBaseURL("http://m.hugelol.com", doc.toString(), "text/html", "UTF-8", null);
+    }
+
 
     /**
      * @TODO show error in HTML, or create some sort of callback that handles this error and
@@ -123,6 +146,32 @@ public class MemeWebView extends WebView {
         }
     }
 
+    private void fixHugelolSiteForDisplay(Document doc) {
+        StringBuilder style = new StringBuilder();
+        style.append("<style>");
+        try {
+            style.append(loadAsset("hugelol_style.css"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        style.append("</style>");
+        doc.head().append(style.toString());
+
+        Elements body = doc.getElementsByTag("body");
+        if(body.size() > 0) {
+            StringBuilder script = new StringBuilder();
+            script.append("<script>");
+            try {
+                script.append(loadAsset("hugelol_script.js"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            script.append("</script>");
+            body.get(0).append(script.toString());
+        }
+
+    }
+
     /**
      * The MemeWebView handles this differently than the other web views if it recognizes the url.
      *
@@ -136,14 +185,22 @@ public class MemeWebView extends WebView {
         Log.v("ahci_meme_view", "loading url: " + url);
         if (url.startsWith("http://9gag.com/")) {
             load9GagMeme(url);
+        } else if (url.startsWith("http://m.hugelol.com/") || url.startsWith("http://hugelol.com/")) {
+            loadHugelolMeme(url);
         } else {
             super.loadUrl(url);
         }
     }
 
+    private void loadHugelolMeme(String url) {
+        Log.v("ahci_meme_view", "loading hugelol meme: " + url);
+        new Thread(new MemeDownloadRunnable(url, onHugelolMemeDownloadListener)).start();
+
+    }
+
     private void load9GagMeme(String url) {
         Log.v("ahci_meme_view", "loading 9gag meme: " + url);
-        new Thread(new MemeDownloadRunnable(url, onMemeDownloadedHandler)).start();
+        new Thread(new MemeDownloadRunnable(url, on9gagMemeDownloadListener)).start();
     }
 
     @Override
