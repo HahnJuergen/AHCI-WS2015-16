@@ -7,6 +7,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.ahci.meme_recommender.R;
 import com.ahci.meme_recommender.face_detection.FaceTracker;
@@ -20,11 +21,13 @@ public class SwipeAnimationView {
 
     private RelativeLayout root;
     private ImageView emoticonImage;
+    private TextView explain;
 
     public SwipeAnimationView(RelativeLayout root, Context context) {
         this.context = context;
         this.root = root;
         this.emoticonImage = (ImageView) root.findViewById(R.id.emoticon_for_swipe_animation);
+        this.explain = (TextView) root.findViewById(R.id.emoticon_for_swipe_animation_explain);
     }
 
     public void showAnimation(int whichEmoticon, AnimationStateListener listener) {
@@ -35,7 +38,18 @@ public class SwipeAnimationView {
         root.getLayoutParams().height = RelativeLayout.LayoutParams.MATCH_PARENT;
 
         selectImage(whichEmoticon);
+        selectText(whichEmoticon);
         root.startAnimation(animation);
+    }
+
+    private void selectText(int whichEmoticon) {
+        String text = "";
+        if(whichEmoticon == 0) {
+            text = "Du hast nicht gelacht!";
+        } else {
+            text = "Du hast gelacht!";
+        }
+        explain.setText(text);
     }
 
     private void selectImage(int whichEmoticon) {

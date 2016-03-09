@@ -35,4 +35,5 @@
     <string name="help_dialog_server_problems_explain">Der Server ist momentan nur ab und zu für Testzwecke verfügbar.</string>
     <string name="help_dialog_correct_explain">Klicke auf den Emoticon unten in der Mitte des Bildschirms, um deine letzten Bewertungen anzusehen und zu korrigieren.</string>
     <string name="help_dialog_correct_topic">Bewertungen korrigieren</string>
+    <string name="emoticon_animation_title">Erkannte Reaktion:</string>
 </resources>

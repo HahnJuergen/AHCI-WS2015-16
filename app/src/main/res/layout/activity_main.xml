@@ -131,11 +131,37 @@
             android:layout_margin="40dp"
             android:background="@drawable/swipe_emoticon_background"
             android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                android:id="@+id/emoticon_for_swipe_animation_title"
+                android:textSize="10pt"
+                android:text="@string/emoticon_animation_title"
+                android:gravity="center"
+                android:layout_above="@+id/emoticon_for_swipe_animation"
+                />
+
             <ImageView
                 android:id="@+id/emoticon_for_swipe_animation"
                 android:layout_width="300dp"
                 android:layout_height="300dp"
                 android:layout_centerInParent="true"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/emoticon_for_swipe_animation_explain"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/emoticon_for_swipe_animation"
+                android:padding="20dp"
+                android:gravity="center"
+                android:textSize="10pt"/>
+
         </RelativeLayout>
 
     </RelativeLayout>
