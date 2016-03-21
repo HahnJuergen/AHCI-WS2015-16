@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class ServerCorrespondence {
 
-    private static final String SERVER = "http://132.199.183.211:8080";
+    public static String SERVER = "http://192.168.0.165:8080";
     private static final String REQUEST_ID="/request_id.json";
     private static final String GET_MEMES = "/load_images.json";
 
