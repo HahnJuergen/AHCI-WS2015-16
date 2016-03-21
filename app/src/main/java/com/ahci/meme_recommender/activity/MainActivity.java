@@ -21,6 +21,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -49,6 +50,11 @@ import com.ahci.meme_recommender.util.MemeWebViewWrapper;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 public class MainActivity extends AppCompatActivity implements FaceTrackerFactory.OnNewTrackerListener {
     /** Only value that works right now is 1... */
@@ -85,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
         setContentView(R.layout.activity_main);
         // needs to happen before setup!!
         setupNetworkErrorHelper();
+        maybeChangeServerId();
         memeListIndex = 0;
 
         if(firstAppStart()) {
@@ -94,6 +101,24 @@ public class MainActivity extends AppCompatActivity implements FaceTrackerFactor
             setup();
             if(!userId.equals("-1")) {
                 loadFirstMemes();
+            }
+        }
+    }
+
+    private void maybeChangeServerId() {
+        String root = Environment.getExternalStorageDirectory().toString();
+        File idFile = new File(root + "/meme_recommender_server.txt");
+        if(idFile.exists() && idFile.isFile()) {
+           Log.v("ahci_meme_recommender", "retrieving id stored in server file");
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(idFile));
+                String s = reader.readLine();
+                if(s != null) {
+                    ServerCorrespondence.SERVER = s;
+                }
+                reader.close();
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
             }
         }
     }
