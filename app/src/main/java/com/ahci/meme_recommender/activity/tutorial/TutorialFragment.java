@@ -2,7 +2,6 @@ package com.ahci.meme_recommender.activity.tutorial;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,7 @@ public class TutorialFragment extends Fragment {
 
         if(position == TutorialHelper.PAGES.length - 1) {
             TextView startButton = ((TextView) rootView.findViewById(R.id.tutorial_page_explanation));
-            startButton.setBackgroundResource(R.drawable.white_button_borders);
+            startButton.setBackgroundResource(R.drawable.green_button_borders);
             startButton.setPadding(40, 20, 40, 20);
             startButton.setOnClickListener(new View.OnClickListener() {
                 @Override
