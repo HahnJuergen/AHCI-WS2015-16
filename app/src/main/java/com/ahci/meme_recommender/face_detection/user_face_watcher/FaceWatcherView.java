@@ -197,13 +197,13 @@ public class FaceWatcherView extends RelativeLayout implements OnFaceUpdateListe
     }
 
     private void hideErrorMessage() {
-        if(System.currentTimeMillis() < timeLastErrorMessageChangeOccured + 500) return;
+        if(System.currentTimeMillis() < timeLastErrorMessageChangeOccured + 2000) return;
         correctionView.setVisibility(View.GONE);
         timeLastErrorMessageChangeOccured = System.currentTimeMillis();
     }
 
     private void showErrorMessage(String newMessage) {
-        if(System.currentTimeMillis() < timeLastErrorMessageChangeOccured + 500) return;
+        if(System.currentTimeMillis() < timeLastErrorMessageChangeOccured + 2000) return;
         if(!hideIfNecessary) {
             correctionView.setVisibility(View.VISIBLE);
             timeLastErrorMessageChangeOccured = System.currentTimeMillis();

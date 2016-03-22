@@ -2,18 +2,15 @@ package com.ahci.meme_recommender.activity;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.hardware.camera2.params.Face;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.ahci.meme_recommender.R;
-import com.ahci.meme_recommender.activity.correct_ratings.RatingsHistoryDialog;
-import com.ahci.meme_recommender.activity.correct_ratings.RatingsHistoryListAdapter;
+import com.ahci.meme_recommender.activity.correct_ratings.CorrectClassificationDialog;
 import com.ahci.meme_recommender.face_detection.FaceTracker;
 import com.ahci.meme_recommender.model.MemeList;
 
@@ -38,7 +35,7 @@ public class EmoticonIconView {
             public void handleMessage(Message msg) {
                 switch(msg.what) {
                     case 0:
-                        update(msg.getData().getFloat("smiling_probability"));
+                        update(msg.getData().getInt("smiling"));
                         break;
                 }
 
@@ -49,7 +46,7 @@ public class EmoticonIconView {
         emoticon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new RatingsHistoryDialog(context, memeList).show();
+                new CorrectClassificationDialog(context, memeList).show();
             }
         });
     }
@@ -59,32 +56,25 @@ public class EmoticonIconView {
         thread.start();
     }
 
-    private void update(float smilingProbability) {
+    private void update(int smiling) {
 
-        int backgroundColor = getBackgroundColor(smilingProbability);
+        int backgroundColor = getBackgroundColor(smiling);
         root.setBackgroundColor(backgroundColor);
 
-        if(smilingProbability > 0 && smilingProbability < 0.4f) {
+        if(smiling == FaceTracker.NOT_SMILING) {
             emoticon.setImageResource(R.drawable.emoticon_neutral);
-        } else if(smilingProbability >= 0.4f) {
+        } else if(smiling == FaceTracker.SMILING) {
             emoticon.setImageResource(R.drawable.emoticon_smiling);
         } else {
 
         }
     }
 
-    private int getBackgroundColor(float smilingProbability) {
-        if(smilingProbability < 0) {
-            return Color.rgb(0xFF, 0xA0, 0xA0);
+    private int getBackgroundColor(int smiling) {
+        if(smiling == FaceTracker.SMILING) {
+            return Color.rgb(0x99, 0xFF, 0x99);
         } else {
-            int[] lowest = {0xE0, 0xE0, 0x99};
-            int[] highest = {0x99, 0xFF, 0x99};
-
-            int redValue = (int) (lowest[0] * (1 - smilingProbability)) + (int) (highest[0] * smilingProbability);
-            int greenValue = (int) (lowest[1] * (1 - smilingProbability)) + (int) (highest[1] * smilingProbability);
-            int blueValue = (int) (lowest[2] * (1 - smilingProbability)) + (int) (highest[2] * smilingProbability);
-
-            return Color.rgb(redValue, greenValue, blueValue);
+            return Color.rgb(0xE0, 0x99, 0x99);
         }
     }
 
@@ -95,17 +85,16 @@ public class EmoticonIconView {
             while(!KILL_TIMER) {
                 if (RUN_TIMER) {
 
-                    float smilingProbability;
+                    int classification = 0;
                     try {
-                        smilingProbability = FaceTracker.getWeightedLastSmilingProbability();
+                        classification = FaceTracker.classify();
                     } catch (Exception e) {
                         e.printStackTrace();
-                        smilingProbability = 0;
                     }
 
                     Message msg = new Message();
                     Bundle data = new Bundle();
-                    data.putFloat("smiling_probability", smilingProbability);
+                    data.putInt("smiling", classification);
                     msg.setData(data);
                     msg.what = 0;
 

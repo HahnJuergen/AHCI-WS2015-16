@@ -43,9 +43,18 @@ public class FaceTracker extends Tracker<Face> {
     }
 
     private static FloatComparator FLOAT_COMPARATOR;
+    private static boolean currentRatingIsSet;
+    private static int currentRatingSetValue;
 
     static {
         FLOAT_COMPARATOR = new FloatComparator();
+        currentRatingIsSet = false;
+        currentRatingSetValue = 0;
+    }
+
+    public static void hardSetRating(int rating) {
+        currentRatingIsSet = true;
+        currentRatingSetValue = rating;
     }
 
     public static final int NOT_SMILING = 0;
@@ -240,6 +249,8 @@ public class FaceTracker extends Tracker<Face> {
     }
 
     public void reset() {
+        currentRatingIsSet = false;
+
         positionsLeftEyes.clear();
         positionsRightEyes.clear();
         positionsLeftMouth.clear();
@@ -305,6 +316,8 @@ public class FaceTracker extends Tracker<Face> {
      * </ul>
      */
     public static int classify() {
+        if(currentRatingIsSet) return currentRatingSetValue;
+
         int classification = NOT_SMILING;
 
         if(smilingProbability.size() == 0) return classification; // @TODO return -1 instead

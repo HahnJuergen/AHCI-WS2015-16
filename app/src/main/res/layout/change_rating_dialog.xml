@@ -3,26 +3,27 @@
     android:layout_width="match_parent" android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/ratings_history_explanation"
+        android:id="@+id/correct_classification_explanation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="7pt"
         android:padding="10dp"
         android:layout_marginBottom="5dp"
-        android:text="@string/history_explanation"
+        android:text="@string/correct_classification_explanation"
         />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/ratings_history_selected"
-        android:layout_below="@id/ratings_history_explanation"
+        android:id="@+id/change_rating_input"
+        android:layout_below="@id/correct_classification_explanation"
         android:padding="10dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/ratings_history_selected_title"
+            android:id="@+id/change_rating_title"
+            android:text="@string/change_rating_dialog_current_rating_title"
             android:layout_alignParentTop="true" />
 
         <!-- just for layout -->
@@ -30,37 +31,31 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_centerHorizontal="true"
-            android:id="@+id/ratings_history_selected_center"/>
+            android:id="@+id/change_rating_selected_center"/>
 
         <ImageView
-            android:id="@+id/ratings_history_selected_happy"
+            android:id="@+id/change_rating_selected_happy"
             android:layout_margin="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/ratings_history_selected_center"
-            android:layout_below="@id/ratings_history_selected_title"
+            android:layout_toLeftOf="@id/change_rating_selected_center"
+            android:background="@drawable/white_button_borders"
+            android:layout_below="@id/change_rating_title"
 
             android:src="@drawable/emoticon_smiling_big"
             />
 
         <ImageView
-            android:id="@+id/ratings_history_selected_neutral"
+            android:id="@+id/change_rating_selected_neutral"
             android:layout_margin="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/ratings_history_selected_center"
-            android:layout_below="@id/ratings_history_selected_title"
+            android:layout_toRightOf="@id/change_rating_selected_center"
+            android:layout_below="@id/change_rating_title"
+            android:background="@drawable/white_button_borders"
             android:src="@drawable/emoticon_neutral_big"
             />
 
     </RelativeLayout>
-
-
-    <ListView
-        android:id="@+id/ratings_history_dialog_item_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/ratings_history_selected"
-        ></ListView>
 
 </RelativeLayout>
