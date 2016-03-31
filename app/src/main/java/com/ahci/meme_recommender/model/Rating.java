@@ -9,9 +9,6 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by jonbr on 12.01.2016.
- */
 public class Rating implements BaseColumns {
 
     public static final String TABLE_NAME = "ratings";

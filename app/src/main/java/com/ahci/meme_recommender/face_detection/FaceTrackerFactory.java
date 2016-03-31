@@ -15,10 +15,6 @@
  */
 package com.ahci.meme_recommender.face_detection;
 
-/**
- * Created by jurgenhahn on 27/10/15.
- */
-
 import android.content.Context;
 
 import com.google.android.gms.vision.MultiProcessor;

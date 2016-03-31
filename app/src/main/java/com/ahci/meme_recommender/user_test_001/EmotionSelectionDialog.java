@@ -15,9 +15,6 @@ import com.ahci.meme_recommender.R;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by jonbr on 08.11.2015.
- */
 public class EmotionSelectionDialog {
 
     private final Context context;

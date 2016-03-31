@@ -9,7 +9,7 @@ import android.widget.EditText;
 import com.ahci.meme_recommender.R;
 
 /**
- * Created by jonbr on 08.11.2015.
+ * Was used for the initial evaluation, no longer relevant.
  */
 public class UserIdInputDialog {
 

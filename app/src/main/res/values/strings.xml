@@ -6,9 +6,9 @@
     <string name="permission_camera_rationale">Kamerazugriff wird für die Gesichtserkennung benötigt</string>
     <string name="no_camera_permission">Die App kann ohne Kamerazugriff nicht funktionieren. Die App wird sich jetzt schließen.</string>
     <string name="low_storage_error">Die für die Gesichtserkennung notwendigen Dateien können nicht heruntergeladen werden, weil das Gerät zu wenig freien Speicherplatz hat.</string>
-    <string name="activity_main_button_next">Nächstes Bild</string>
+    <string name="activity_main_button_next">Next Image</string>
     <string name="choose_emotion_dialog_hint">Welches Emoticon beschreibt deine Reaktion auf das Bild am besten?</string>
-    <string name="activity_main_button_previous">Zurück</string>
+    <string name="activity_main_button_previous">Back</string>
     <string name="no_network_enabled_title">Keine Internetverbindung</string>
     <string name="no_network_enabled_body">Möchten Sie die Interneteinstellungen öffnen?</string>
     <string name="open_network">Einstellungen</string>

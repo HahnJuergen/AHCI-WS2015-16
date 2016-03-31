@@ -13,9 +13,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
-/**
- * Created by jonbr on 12.01.2016.
- */
 class DownloadTask extends AsyncTask<String, Void, String> {
 
     private boolean noConnectionToServer = false;

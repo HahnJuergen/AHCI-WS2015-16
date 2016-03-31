@@ -2,9 +2,6 @@ package com.ahci.meme_recommender.auxiliary;
 
 import android.graphics.PointF;
 
-/**
- * Created by jurgenhahn on 05/11/15.
- */
 public class AnalyticGeometry {
     public static final PointF getGeometricVector(final PointF a, final PointF b) {
         return new PointF(b.x - a.x, b.y - a.y);
